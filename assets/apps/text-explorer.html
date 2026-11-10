@@ -1,0 +1,295 @@
+<!-- Sample app produced for the workshop 'Beyond Chatbots' — demo data, no AI model inside. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text Explorer — sample research tool</title>
+<style>
+:root{
+  --dark:#361A54; --bright:#993BFF; --mid:#BA82FF; --tint:#EEDEFF; --paper:#FAFAFA; --ink:#2A2233; --maroon:#651D32; --ok:#2E7D5B;
+  --line:#DDD3EA; --muted:#5B5070;
+  --font:"Segoe UI","Helvetica Neue",Arial,"Noto Sans KR","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:16px/1.45 var(--font);background:var(--paper);color:var(--ink);display:flex;flex-direction:column;overflow:hidden}
+h1,h2,p,ul{margin:0}
+button,input,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+.top :focus-visible{outline-color:var(--mid)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.top{flex:none;height:50px;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 16px}
+.brand{display:flex;align-items:center;gap:12px;white-space:nowrap}
+.brand h1{font-size:19px;font-weight:600;letter-spacing:.01em}
+.tag{font-size:15px;font-weight:700;letter-spacing:.1em;color:var(--mid);border:1px solid var(--mid);border-radius:3px;padding:0 8px;line-height:22px}
+.demo{font-size:15px;color:var(--tint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.demo strong{letter-spacing:.08em;color:#fff}
+
+.app{flex:1;min-height:0;display:grid;grid-template-columns:252px minmax(0,1fr);gap:12px;padding:12px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;min-height:0;min-width:0}
+.panel h2{font-size:18px;font-weight:600;color:var(--dark);line-height:26px}
+.sub{font-size:15px;color:var(--muted)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 16px;font-size:16px;font-weight:600;border-radius:6px;border:2px solid var(--bright);background:var(--bright);color:#fff;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--dark);border-color:var(--dark)}
+.btn.sec{background:#fff;color:var(--dark);border-color:var(--dark)}
+.btn.sec:hover{background:var(--tint)}
+.btn svg{width:18px;height:18px;flex:none}
+.filebtn:focus-within{outline:3px solid var(--bright);outline-offset:2px}
+.filebtn input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+
+/* left column */
+.left{gap:8px}
+.left .head{display:flex;align-items:baseline;justify-content:space-between}
+.left label.h{font-size:18px;font-weight:600;color:var(--dark)}
+.left textarea{flex:1;min-height:120px;width:100%;resize:none;border:2px solid var(--line);border-radius:6px;padding:8px 10px;font-size:15px;line-height:1.5;background:#fff}
+.left textarea:focus{border-color:var(--bright)}
+.status{font-size:15px;color:var(--muted);min-height:22px}
+.status.stale{color:var(--maroon);font-weight:600}
+.btnrow{display:flex;gap:8px}
+.btnrow .btn{flex:1;padding:0 8px}
+.left .btn.wide{width:100%}
+
+/* right column */
+.right{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0}
+.cards{display:flex;gap:8px;flex:none}
+.stat{flex:1 1 auto;background:#fff;border:1px solid var(--line);border-top:4px solid var(--bright);border-radius:6px;padding:6px 12px 8px;white-space:nowrap}
+.stat .l{font-size:15px;color:var(--muted)}
+.stat .v{font-size:28px;font-weight:700;color:var(--dark);line-height:1.15;font-variant-numeric:tabular-nums}
+.analysis{flex:1;min-height:0;display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px}
+
+/* switch (light) */
+.swrow{display:flex;align-items:center;gap:10px;font-size:16px;margin:2px 0 6px}
+.swrow span{cursor:pointer}
+.switch{width:46px;height:26px;border-radius:13px;border:2px solid var(--dark);background:#fff;position:relative;cursor:pointer;padding:0;flex:none}
+.switch .knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--dark);transition:transform .15s}
+.switch[aria-checked=true]{background:var(--bright);border-color:var(--bright)}
+.switch[aria-checked=true] .knob{transform:translateX(20px);background:#fff}
+
+/* bar chart */
+.bars{display:flex;flex-direction:column;flex:1;min-height:0}
+.brow{display:grid;grid-template-columns:92px minmax(0,1fr) 24px;align-items:center;gap:8px;height:23px;width:100%;padding:0;border:0;background:none;cursor:pointer;text-align:left;border-radius:3px}
+.brow .w{text-align:right;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .t{height:13px;display:block}
+.brow .f{display:block;height:100%;background:var(--bright);border-radius:0 2px 2px 0;min-width:2px}
+.brow .c{font-size:15px;font-weight:600;color:var(--dark);font-variant-numeric:tabular-nums}
+.brow:hover .f,.brow[aria-pressed=true] .f{background:var(--dark)}
+.brow[aria-pressed=true] .w{font-weight:700;color:var(--dark)}
+.brow:hover .w{color:var(--dark)}
+.emptymsg{color:var(--muted);padding:12px 4px;font-size:16px}
+.chartfoot{margin-top:8px;flex:none}
+.chartfoot .btn{width:100%;height:40px;font-size:15px}
+
+/* kwic */
+.kwhead{display:flex;align-items:baseline;justify-content:space-between}
+.kwhead .n{font-size:15px;color:var(--muted)}
+.ctrls{display:flex;align-items:center;gap:12px;margin:6px 0 8px;flex-wrap:wrap}
+.ctrls .f{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;color:var(--dark)}
+.ctrls input[type=text]{height:40px;width:150px;border:2px solid var(--line);border-radius:6px;padding:0 10px;font-size:17px;font-weight:600;background:#fff}
+.ctrls input[type=text]:focus{border-color:var(--bright)}
+.ctrls input[type=range]{width:96px;accent-color:var(--bright);height:24px}
+.ctrls output{font-size:16px;font-weight:700;color:var(--dark);min-width:34px;font-variant-numeric:tabular-nums}
+.kwwrap{flex:1;min-height:0;overflow:auto;border:1px solid var(--line);border-radius:4px}
+table{border-collapse:collapse;width:100%;table-layout:auto;font-size:15px}
+th{position:sticky;top:0;background:var(--tint);color:var(--dark);font-weight:700;padding:5px 8px;white-space:nowrap;z-index:1}
+th.l,td.l{text-align:right}
+th.r,td.r{text-align:left}
+th.k,td.k{text-align:center;width:1%}
+td{padding:5px 7px;border-bottom:1px solid var(--line);vertical-align:middle;line-height:1.35}
+td.l,td.r{width:50%;overflow-wrap:anywhere}
+td.k{white-space:nowrap;font-weight:700;color:var(--maroon);background:#F7EFFF}
+.hint2{font-size:15px;color:var(--muted);margin-bottom:2px}
+
+@media (max-width:1040px){
+  .app{grid-template-columns:250px minmax(0,1fr)}
+  .right{overflow:auto;padding-right:2px}
+  .analysis{grid-template-columns:1fr;flex:none;min-height:auto}
+  .cards{flex-wrap:wrap}
+  .stat{flex:1 1 130px}
+  .chart.panel,.kwic.panel{min-height:auto}
+  .bars{flex:none}
+  .kwwrap{max-height:340px;flex:none}
+  .demo .x{display:none}
+}
+@media (max-width:700px){
+  .app{display:block;overflow:auto}
+  .left{height:330px;margin-bottom:12px}
+  .right{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){ .switch .knob{transition:none} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="3" width="22" height="20" rx="2" fill="none" stroke="#BA82FF" stroke-width="2"/><path d="M6 17v-4M10 17V9M14 17v-6M18 17V7" stroke="#BA82FF" stroke-width="2.4" stroke-linecap="round"/></svg>
+    <h1>Text Explorer</h1><span class="tag">SAMPLE APP</span>
+  </div>
+  <div class="demo"><strong>DEMO</strong> · invented sample text<span class="x"> · analysis runs in your browser only</span></div>
+</header>
+
+<main class="app">
+  <!-- LEFT: input -->
+  <section class="panel left" aria-label="Text input">
+    <div class="head"><label class="h" for="txt">Text to analyse</label></div>
+    <textarea id="txt" spellcheck="false"></textarea>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="btnrow">
+      <button type="button" class="btn" id="go"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 16V9M8 16V4M13 16v-5M18 16V7"/></svg>Analyse</button>
+      <button type="button" class="btn sec" id="sample">Load sample</button>
+    </div>
+    <label class="btn sec filebtn wide" for="file"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h4a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Open .txt file<input type="file" id="file" accept=".txt,text/plain"></label>
+  </section>
+
+  <!-- RIGHT: results -->
+  <section class="right" aria-label="Analysis">
+    <div class="cards" id="cards" aria-label="Summary statistics"></div>
+    <div class="analysis">
+      <div class="panel chart">
+        <h2 id="charttitle">Top 15 content words</h2>
+        <div class="swrow"><button type="button" class="switch" id="hide" role="switch" aria-checked="true" aria-labelledby="hidel"><span class="knob"></span></button><span id="hidel">Hide common words</span></div>
+        <div class="bars" id="bars"></div>
+        <div class="chartfoot"><button type="button" class="btn sec" id="csv"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v10M6 9l4 4 4-4M4 17h12"/></svg>Download frequency table (CSV)</button></div>
+      </div>
+      <div class="panel kwic">
+        <div class="kwhead"><h2>Keyword in context</h2><span class="n" id="kwn" aria-live="polite"></span></div>
+        <p class="hint2">Type a word, or click a bar. Use * as a wildcard (learn*).</p>
+        <div class="ctrls">
+          <div class="f"><label for="kw">Keyword</label><input type="text" id="kw" value="learners" autocomplete="off" spellcheck="false"></div>
+          <div class="f"><label for="win">Window</label><input type="range" id="win" min="3" max="10" step="1" value="3"><output id="winv" for="win">±3</output></div>
+        </div>
+        <div class="kwwrap" id="kwwrap" tabindex="0" aria-label="Concordance lines">
+          <table>
+            <thead><tr><th class="l">Left context</th><th class="k">KEYWORD</th><th class="r">Right context</th></tr></thead>
+            <tbody id="kwbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const SAMPLE="Last term, a group of secondary school learners began using AI tools in their weekly English writing class. At first, many learners treated the tool like a fast dictionary, and they copied its answers without much thought. The teachers noticed this quickly and decided to change the task instead of banning the tool. Rather than asking for a perfect paragraph, they asked learners to compare a draft written by the tool with a draft written by themselves. This comparison led to lively discussion about word choice, tone, and grammar. Learners found mistakes in the output, and they felt proud when they could explain why a sentence sounded unnatural. Teachers also used the tool to prepare feedback, but they always checked the feedback before sharing it. One teacher said that feedback written by a machine can be useful, yet it rarely knows the learner's goals. Another teacher worried that some learners might depend on the tool too much. To reduce this risk, the class agreed on simple rules for using the tool. Learners must write a first draft alone, record every prompt, and explain what they changed. Over several weeks, the learners became more confident readers of their own writing. They asked better questions, and the teachers spent less time correcting small errors and more time giving feedback on ideas. The class still has open questions about fairness, privacy, and long-term learning. For now, both learners and teachers agree that the tool works best as a conversation partner, not as a replacement for thinking.";
+const STOP=new Set(("a about above after again against all also am an and another any are aren't as at be because been before being below between both but by can can't cannot could couldn't did didn't do does doesn't doing don't down during each even every few for from further had hadn't has hasn't have haven't having he her here hers herself him himself his how i if in instead into is isn't it it's its itself just less let's many may me might more most much must my myself never no nor not now of off often on once one only or other ought our ours ourselves out over own rather same several shall she should shouldn't so some still such than that that's the their theirs them themselves then there there's these they this those through to too two under until up very was wasn't we were weren't what when where which while who whom why will with won't would wouldn't yet you your yours yourself yourselves always s t").split(/\s+/));
+const TOKEN=/[\p{L}\p{N}]+(?:['’][\p{L}]+)*/gu;
+const ABBR=/\b(Mr|Mrs|Ms|Dr|Prof|St|vs|Fig|etc|e\.g|i\.e)\./g;
+const SPLIT=/(?<=[.!?…。！？]["”’')\]]*)\s+|\n\s*\n/;
+
+let text='', toks=[], freq=[], sentCount=0;
+
+function tokenize(t){
+  const out=[]; let m; TOKEN.lastIndex=0;
+  while((m=TOKEN.exec(t))) out.push({w:m[0].toLowerCase().replace(/’/g,"'"),s:m.index,e:m.index+m[0].length});
+  return out;
+}
+function countSentences(t){
+  return t.replace(ABBR,'$1\u0001').split(SPLIT).filter(x=>/[\p{L}\p{N}]/u.test(x)).length;
+}
+const fmtInt=n=>n.toLocaleString('en-US');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- analysis ---------- */
+function analyse(){
+  text=$('#txt').value; toks=tokenize(text); sentCount=toks.length?Math.max(1,countSentences(text)):0;
+  const m=new Map(); toks.forEach(t=>m.set(t.w,(m.get(t.w)||0)+1));
+  freq=Array.from(m,([w,c])=>({w,c,stop:STOP.has(w)})).sort((a,b)=>b.c-a.c||a.w.localeCompare(b.w));
+  const N=toks.length, V=freq.length;
+  const cards=[['Tokens',fmtInt(N)],['Types',fmtInt(V)],['Type–token ratio',N?(V/N).toFixed(2):'–'],['Sentences',fmtInt(sentCount)],['Mean sentence length',sentCount?(N/sentCount).toFixed(1):'–']];
+  $('#cards').innerHTML=cards.map(c=>'<div class="stat"><div class="l">'+c[0]+'</div><div class="v">'+c[1]+'</div></div>').join('');
+  setStatus(false); renderChart(); runKwic();
+}
+function setStatus(stale,msg){
+  const s=$('#status'); s.className='status'+(stale?' stale':'');
+  s.textContent=stale?'Edited. Press Analyse to update.':(msg||(tokensIn($('#txt').value)+' words'));
+}
+function tokensIn(t){ return fmtInt(tokenize(t).length); }
+
+function renderChart(){
+  const hide=$('#hide').getAttribute('aria-checked')==='true';
+  $('#charttitle').textContent=hide?'Top 15 content words':'Top 15 words';
+  const rows=freq.filter(f=>!hide||!f.stop).slice(0,15), max=rows.length?rows[0].c:1;
+  const sel=$('#kw').value.trim().toLowerCase();
+  $('#bars').innerHTML=rows.length?rows.map(r=>
+    '<button type="button" class="brow" data-w="'+esc(r.w)+'" aria-pressed="'+(r.w===sel)+'" title="'+esc(r.w)+': '+r.c+' (click to search)"><span class="w">'+esc(r.w)+'</span><span class="t"><span class="f" style="width:'+Math.max(3,Math.round(100*r.c/max))+'%"></span></span><span class="c">'+r.c+'</span></button>').join(''):'<p class="emptymsg">No words to show yet.</p>';
+}
+
+/* ---------- KWIC ---------- */
+function matcher(q){
+  const parts=q.toLowerCase().replace(/’/g,"'").split(/\s+/).filter(Boolean);
+  return parts.map(p=>new RegExp('^'+p.replace(/[.+?^${}()|[\]\\]/g,'\\$&').replace(/\*/g,"[\\p{L}\\p{N}'’]*")+'$','u'));
+}
+function runKwic(){
+  const q=$('#kw').value.trim(), win=+$('#win').value, body=$('#kwbody');
+  $('#winv').textContent='±'+win;
+  syncBars();
+  if(!q){ body.innerHTML='<tr><td colspan="3" class="emptymsg">Type a keyword to see it in context.</td></tr>'; $('#kwn').textContent=''; return; }
+  const re=matcher(q), k=re.length, hits=[];
+  for(let i=0;i+k<=toks.length;i++){
+    let ok=true; for(let j=0;j<k;j++){ if(!re[j].test(toks[i+j].w)){ ok=false; break; } }
+    if(ok) hits.push(i);
+  }
+  $('#kwn').textContent=hits.length+(hits.length===1?' match':' matches');
+  if(!hits.length){ body.innerHTML='<tr><td colspan="3" class="emptymsg">No matches for “'+esc(q)+'”. Try another word or a wildcard such as learn*.</td></tr>'; return; }
+  body.innerHTML=hits.slice(0,300).map(i=>{
+    const a=toks[Math.max(0,i-win)].s, last=toks[i+k-1], b=toks[Math.min(toks.length-1,i+k-1+win)].e;
+    return '<tr><td class="l">'+(i>0?esc(text.slice(a,toks[i].s).trim()):'')+'</td><td class="k">'+esc(text.slice(toks[i].s,last.e))+'</td><td class="r">'+esc(text.slice(last.e,b).trim())+'</td></tr>';
+  }).join('');
+  $('#kwwrap').scrollTop=0;
+}
+function syncBars(){
+  const sel=$('#kw').value.trim().toLowerCase();
+  document.querySelectorAll('.brow').forEach(b=>b.setAttribute('aria-pressed',b.dataset.w===sel?'true':'false'));
+}
+
+/* ---------- CSV ---------- */
+function downloadCSV(){
+  const N=toks.length||1;
+  const lines=['rank,word,count,per_1000_tokens,common_word'].concat(freq.map((f,i)=>[i+1,/[",\n]/.test(f.w)?'"'+f.w.replace(/"/g,'""')+'"':f.w,f.c,(1000*f.c/N).toFixed(1),f.stop].join(',')));
+  const blob=new Blob(['﻿'+lines.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='frequency-table.csv';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+
+/* ---------- wiring ---------- */
+$('#go').addEventListener('click',analyse);
+$('#sample').addEventListener('click',()=>{ $('#txt').value=SAMPLE; $('#txt').scrollTop=0; $('#kw').value='learners'; analyse(); setStatus(false,'Sample passage (invented), '+tokensIn(SAMPLE)+' words'); });
+$('#txt').addEventListener('input',()=>setStatus(true));
+$('#txt').addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); analyse(); } });
+$('#hide').addEventListener('click',()=>{ const b=$('#hide'); b.setAttribute('aria-checked',b.getAttribute('aria-checked')==='true'?'false':'true'); renderChart(); });
+$('#hidel').addEventListener('click',()=>$('#hide').click());
+$('#bars').addEventListener('click',e=>{ const b=e.target.closest('.brow'); if(!b) return; $('#kw').value=b.dataset.w; runKwic(); });
+$('#kw').addEventListener('input',runKwic);
+$('#win').addEventListener('input',runKwic);
+$('#csv').addEventListener('click',downloadCSV);
+$('#file').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  if(f.size>3e6){ setStatus(false,'File too large for this demo (max 3 MB).'); e.target.value=''; return; }
+  const r=new FileReader();
+  r.onload=()=>{ $('#txt').value=String(r.result); $('#txt').scrollTop=0; analyse(); setStatus(false,f.name+', '+tokensIn(String(r.result))+' words'); };
+  r.onerror=()=>setStatus(false,'Could not read that file.');
+  r.readAsText(f); e.target.value='';
+});
+
+$('#txt').value=SAMPLE; analyse(); setStatus(false,'Sample passage (invented), '+tokensIn(SAMPLE)+' words');
+})();
+</script>
+
+<script>
+/* Deck integration: when shown inside the slide deck's iframe, hand Esc / PageUp / PageDown back to the deck. */
+(function(){ if (window.parent === window) return;
+  addEventListener('keydown', function(e){
+    if (e.key==='Escape' || e.key==='PageDown' || e.key==='PageUp') parent.postMessage({deck:'key', key:e.key}, '*');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beyond Chatbots: Exploring AI Coding Tools for Teaching, Learning, and Research</title>
+<link rel="stylesheet" href="engine/deck.css?v=2">
+<link rel="stylesheet" href="engine/components.css?v=1">
+<style>
+  /* deck-local components (this workshop only) */
+  .demo-split{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:38px;height:100%;min-height:0}
+  .demo-split>.win{height:100%}
+  .try{display:flex;flex-direction:column;gap:18px;padding-top:6px}
+  .try h3{margin:0;font-size:30px;letter-spacing:.06em;text-transform:uppercase;color:var(--bright)}
+  .try ol{list-style:none;counter-reset:t;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+  .try li{counter-increment:t;position:relative;padding:16px 20px 16px 76px;background:var(--tint);border-left:6px solid var(--bright);font-size:26px;line-height:1.3;color:var(--dark)}
+  .try li::before{content:counter(t);position:absolute;left:18px;top:50%;margin-top:-22px;width:44px;height:44px;border-radius:50%;background:var(--dark);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:700}
+  .try .why{margin-top:auto;padding:18px 22px;background:var(--dark);color:#fff;font-size:24px;line-height:1.3}
+  .try .why b{color:var(--mid)}
+  .thumb{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;border-bottom:2px solid var(--line);margin:-28px -32px 16px;width:calc(100% + 64px);max-width:none}
+  .tools .card{padding:28px 32px 24px}
+  .tools .card h3{font-size:34px;margin-bottom:6px}
+  .tools .card p{font-size:22px;line-height:1.3;margin-bottom:8px}
+  .tools .card .foot{padding-top:6px;font-size:17px;line-height:1.3;letter-spacing:.04em}
+  .big-q{font-size:54px;line-height:1.2;font-weight:700;color:var(--dark)}
+  .stepcard{display:flex;gap:20px;align-items:flex-start}
+  .spec{background:#fff;border:3px solid var(--dark);padding:26px 34px 30px;display:flex;flex-direction:column;gap:20px}
+  .spec .fld{display:flex;gap:20px;align-items:baseline;font-size:30px}
+  .spec .fld b{flex:none;width:300px;color:var(--bright);font-size:22px;letter-spacing:.09em;text-transform:uppercase}
+  .spec .fld i{flex:1;display:block;border-bottom:3px dotted var(--mid);height:40px}
+</style>
+</head>
+<body data-theme="ucl" data-logo="assets/logos/ucl-purple.png" data-logo-dark="assets/logos/ucl-white.png" data-total="60"
+      data-title="Beyond Chatbots: Exploring AI Coding Tools for Teaching, Learning, and Research"
+      data-author="Seongyong Lee" data-event="Workshop · 11 November 2026">
+
+<main class="deck" id="deck">
+
+<!-- ====================================================================== PART 1 · BEYOND CHATBOTS (0:00–10:00) -->
+
+<!-- 1 · COVER -->
+<section class="slide cover" data-title="Cover" data-time="0.5">
+  <div class="wrap">
+    <h1 class="ttl">Beyond Chatbots<small>Exploring AI Coding Tools for Teaching, Learning, and Research</small></h1>
+  </div>
+  <p class="who">Seongyong Lee<span>University College London</span><span>Institute of Education (IOE)</span></p>
+</section>
+
+<!-- 2 · AGENDA + OUTCOMES -->
+<section class="slide" data-title="The plan" data-time="1">
+  <header class="head">
+    <p class="kicker">Workshop map</p>
+    <h2 class="title">You will move from <em>using</em> AI tools to <em>planning</em> one of your own</h2>
+  </header>
+  <div class="body" style="gap:40px;justify-content:center">
+    <div class="strip">
+      <div style="--w:10"><b>Beyond Chatbots</b></div>
+      <div style="--w:15" class="d"><b>Teaching &amp; Learning</b></div>
+      <div style="--w:15" class="d"><b>Research</b></div>
+      <div style="--w:10"><b>Ideas to Applications</b></div>
+      <div style="--w:10"><b>Critical Checks &amp; Q&amp;A</b></div>
+    </div>
+    <div class="cards n4">
+      <div class="card sm"><span class="num">01</span><h3>Explain</h3><p>How chatbots differ from AI coding tools.</p></div>
+      <div class="card sm"><span class="num">02</span><h3>Identify</h3><p>Uses in teaching, learning and research.</p></div>
+      <div class="card sm"><span class="num">03</span><h3>Plan</h3><p>A small tool or automation from your own idea.</p></div>
+      <div class="card sm dark"><span class="num">04</span><h3>Check</h3><p>Accuracy, security, ethics and validity.</p></div>
+    </div>
+  </div>
+  <p class="take">The core shift: <em>using</em> AI tools → <em>creating</em> tools with AI.</p>
+</section>
+
+<!-- 3 · DIVIDER 01 -->
+<section class="slide divider" data-title="Beyond Chatbots" data-time="0.5">
+  <div class="wrap">
+    <p class="lab">Part</p>
+    <p class="num" data-count="1" data-pad="2">01</p>
+    <h2 class="ttl">Beyond Chatbots</h2>
+    <p class="desc">What AI coding tools are, and how they differ from the chatbots we already know.</p>
+  </div>
+</section>
+
+<!-- 4 · THE SHIFT -->
+<section class="slide" data-title="The shift: from using to creating" data-time="1.5">
+  <header class="head">
+    <p class="kicker">The shift</p>
+    <h2 class="title">AI is no longer only something we <em>use</em>; it is something we can <em>build with</em></h2>
+  </header>
+  <div class="body c" style="gap:34px">
+    <div class="vs" style="grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr)">
+      <div class="side grey"><span class="tag">Until now</span><h3>Using AI tools</h3><p><b class="dk">Ask · Discuss · Generate</b></p><p class="sm">You type. The AI answers. You copy the result somewhere else.</p></div>
+      <div class="mid" data-step="1"><svg class="ic"><use href="#i-arrow"/></svg></div>
+      <div class="side dark" data-step="1"><span class="tag">This workshop</span><h3>Creating tools with AI</h3><p><b>Build · Test · Automate</b></p><p>You describe. The AI builds. You test, judge and improve.</p></div>
+    </div>
+    <div class="note" data-step="2">You do <b>not</b> need to be a programmer. You need to know your learners, your research question and what "good" looks like.</div>
+  </div>
+  <p class="take">From <em>using</em> AI tools to <em>creating</em> tools with AI.</p>
+  <p class="src">Jeon &amp; Lee (2023).</p>
+</section>
+
+<!-- 5 · THREE KINDS OF TOOLS -->
+<section class="slide" data-title="Three kinds of tools" data-time="1">
+  <header class="head">
+    <p class="kicker">Key messages</p>
+    <h2 class="title">Three kinds of tool, three kinds of <em>activity</em></h2>
+  </header>
+  <div class="body c">
+    <div class="cards" style="min-height:440px">
+      <div class="card"><svg class="ic big"><use href="#i-chat"/></svg><h3>AI Chatbots</h3><p>Ask questions, talk ideas through and generate content.</p><span class="foot">Ask · Discuss · Generate</span></div>
+      <div class="card dark"><svg class="ic big"><use href="#i-terminal"/></svg><h3>AI Coding Tools</h3><p>Describe what you need. The tool writes, runs and fixes the code.</p><span class="foot">Build · Test · Automate</span></div>
+      <div class="card"><svg class="ic big"><use href="#i-cap"/></svg><h3>Educational Applications</h3><p>What you make: tools that serve your class or your study.</p><span class="foot">Teach · Learn · Research</span></div>
+    </div>
+  </div>
+  <p class="take">Coding tools are the <em>means</em>; educational applications are the <em>goal</em>.</p>
+</section>
+
+<!-- 6 · LADDER -->
+<section class="slide" data-title="From chatbot to coding agent" data-time="1.5">
+  <header class="head">
+    <p class="kicker">How they differ</p>
+    <h2 class="title">From chatbot to agent to <em>coding agent</em>: each step does more on its own</h2>
+  </header>
+  <div class="body">
+    <div class="ladder" style="--n:3">
+      <div class="rung" style="--h:44" data-anim="growy" data-step="1"><svg class="ic big"><use href="#i-chat"/></svg><span class="tag">Step 1 · Web chatbot</span><h3>Answers</h3><p>Replies in a chat window. You copy the result and use it somewhere else.</p></div>
+      <div class="rung" style="--h:70" data-anim="growy" data-step="2"><svg class="ic big"><use href="#i-search"/></svg><span class="tag">Step 2 · Agent</span><h3>Acts</h3><p>Plans steps and uses tools for you: search, files, other apps.</p></div>
+      <div class="rung" style="--h:96" data-anim="growy" data-step="3"><svg class="ic big"><use href="#i-terminal"/></svg><span class="tag">Step 3 · Coding agent</span><h3>Builds</h3><p>Reads your project, writes and runs code, tests it and fixes it.</p></div>
+    </div>
+  </div>
+  <p class="take">Same underlying AI; the difference is what it is <em>allowed to do</em>.</p>
+</section>
+
+<!-- 7 · SAME REQUEST -->
+<section class="slide" data-title="Same request, different result" data-time="1.5">
+  <header class="head">
+    <p class="kicker">How they differ · side by side</p>
+    <h2 class="title">Same request, different result: <em>text to copy</em> versus <em>a working file</em></h2>
+  </header>
+  <div class="body">
+    <div class="split b" style="align-items:stretch">
+      <div class="chatbox">
+        <div class="bar"><svg class="ic"><use href="#i-chat"/></svg>Chatbot</div>
+        <div class="chat">
+          <div class="msg u" data-step="1"><span class="av"><svg class="ic"><use href="#i-user"/></svg></span><div class="tx">Make a vocabulary quiz for my class.</div></div>
+          <div class="msg" data-step="2"><span class="av"><svg class="ic"><use href="#i-robot"/></svg></span><div class="tx">Here is a 10-question quiz and some code. <span class="dim">Copy it into a file, save it as .html, then open it.</span></div></div>
+        </div>
+      </div>
+      <div class="term">
+        <div class="tb"><i></i><i></i><i></i><span>Coding agent</span></div>
+        <div class="tx">
+          <span class="ln" data-step="3"><span class="p">&gt;</span> <span class="you">Make a vocabulary quiz for my class.</span></span>
+          <span class="ln" data-step="4"><span class="dim">Plan: word list · quiz page · scoring</span></span>
+          <span class="ln" data-step="4"><span class="ok">✓</span> created quiz.html</span>
+          <span class="ln" data-step="4"><span class="ok">✓</span> opened it and ran a test round</span>
+          <span class="ln" data-step="4"><span class="wr">!</span> fixed: score did not reset</span>
+          <span class="ln" data-step="4"><span class="ok">✓</span> ready — open quiz.html</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="take">The chatbot gives you <em>material</em>. The coding agent gives you a <em>tool</em>, tested.</p>
+</section>
+
+<!-- 8 · WHO'S WHO -->
+<section class="slide" data-title="Who is who" data-time="1.5">
+  <header class="head">
+    <p class="kicker">The tools you will hear about</p>
+    <h2 class="title">Different names, one idea: an assistant that can <em>act</em> in your project</h2>
+  </header>
+  <div class="body" style="justify-content:center">
+    <div class="cards n5 tools" style="gap:20px">
+      <div class="card"><img class="thumb" alt="" src="assets/shots/chatgpt.jpg"><h3>ChatGPT</h3><p>A chat assistant, with coding and work tools added.</p><span class="foot">Web · desktop · mobile</span></div>
+      <div class="card"><img class="thumb" alt="" src="assets/shots/claude-code.jpg"><h3>Claude Code</h3><p>A coding agent that reads your project and runs commands.</p><span class="foot">Terminal · IDE · desktop · web</span></div>
+      <div class="card"><img class="thumb" alt="" src="assets/shots/codex.jpg"><h3>Codex</h3><p>OpenAI's coding agent, included with ChatGPT plans.</p><span class="foot">App · IDE · CLI · cloud</span></div>
+      <div class="card"><img class="thumb" alt="" src="assets/shots/copilot.jpg"><h3>GitHub Copilot</h3><p>GitHub's coding agent, tied to issues and pull requests.</p><span class="foot">Desktop app · CLI · VS Code</span></div>
+      <div class="card"><img class="thumb" alt="" src="assets/shots/cursor.jpg"><h3>Cursor</h3><p>A coding agent built around an editor, with CLI and cloud agents.</p><span class="foot">Desktop · CLI · Slack</span></div>
+    </div>
+  </div>
+  <p class="take">Choose by the <em>job</em> — ask, discuss or build — not by the brand.</p>
+  <p class="src">Screenshots: official product websites.</p>
+</section>
+
+<!-- 9 · THE LOOP -->
+<section class="slide" data-title="How a coding agent works" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Under the hood</p>
+    <h2 class="title">A coding agent works in a <em>loop</em> that you can supervise at every turn</h2>
+  </header>
+  <div class="body">
+    <div class="split a">
+      <div class="loop" style="--rx:320px;--ry:205px">
+        <div class="mid">You review<br>every turn</div>
+        <div class="n" style="--a:-90deg">Describe<small>your goal</small></div>
+        <div class="n" style="--a:-18deg">Plan<small>steps proposed</small></div>
+        <div class="n dk" style="--a:54deg">Write &amp; run<small>code, files</small></div>
+        <div class="n" style="--a:126deg">Test<small>see what happens</small></div>
+        <div class="n" style="--a:198deg">Fix<small>try again</small></div>
+      </div>
+      <div class="col" style="gap:26px">
+        <div class="rule"><span class="tag">You decide</span><p style="margin:0">The goal, the pedagogy, the data, and what "good" means.</p></div>
+        <div class="rule dk"><span class="tag">The agent does</span><p style="margin:0">The typing, the running, the first round of debugging.</p></div>
+        <div class="note">If you cannot judge the result, you are not yet ready to rely on it.</div>
+      </div>
+    </div>
+  </div>
+  <p class="take">You stay in the loop; the agent does the <em>typing</em>.</p>
+</section>
+
+<!-- ====================================================================== PART 2 · TEACHING & LEARNING (10:00–25:00) -->
+
+<!-- 10 · DIVIDER 02 -->
+<section class="slide divider" data-title="AI Tools for Teaching & Learning" data-time="0.5">
+  <div class="wrap">
+    <p class="lab">Part</p>
+    <p class="num" data-count="2" data-pad="2">02</p>
+    <h2 class="ttl">AI Tools for Teaching &amp; Learning</h2>
+    <p class="desc">Practice chatbots, interactive activities and personalised learning tools — three sample cases.</p>
+  </div>
+</section>
+
+<!-- 11 · MAP OF USES -->
+<section class="slide" data-title="Map of teaching and learning uses" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Teaching &amp; learning · the map</p>
+    <h2 class="title">One coding tool can produce <em>many kinds</em> of teaching and learning application</h2>
+  </header>
+  <div class="body">
+    <div class="hub" style="--rx:650px;--ry:215px">
+      <div class="core">Tools for teaching &amp; learning</div>
+      <div class="sat" style="--a:-90deg">Practice chatbots<small>speaking and writing</small></div>
+      <div class="sat" style="--a:-18deg">Interactive activities<small>polls, quizzes, group boards</small></div>
+      <div class="sat" style="--a:54deg">Personalised trainers<small>vocabulary, review</small></div>
+      <div class="sat" style="--a:126deg">Teaching materials<small>readings, worksheets</small></div>
+      <div class="sat" style="--a:198deg">Feedback helpers<small>rubrics, comments</small></div>
+    </div>
+  </div>
+  <p class="take">Start from the <em>learner activity</em> you want, then pick the shape of the tool.</p>
+  <p class="src">Kasneci et al. (2023).</p>
+</section>
+
+<!-- 12 · CHATBOT DESIGN DECISIONS -->
+<section class="slide" data-title="A chatbot becomes pedagogy when you set its rules" data-time="2">
+  <header class="head">
+    <p class="kicker">Case 1 · Practice chatbot</p>
+    <h2 class="title">A chatbot becomes <em>pedagogy</em> when the teacher sets its rules</h2>
+  </header>
+  <div class="body">
+    <div class="split b top" style="align-items:stretch">
+      <div class="cards stack">
+        <div class="card row-card sm"><svg class="ic big"><use href="#i-sliders"/></svg><div><h3>Level</h3><p>A2 to B2 changes sentence length and the hints.</p></div></div>
+        <div class="card row-card sm"><svg class="ic big"><use href="#i-edit"/></svg><div><h3>Feedback style</h3><p>Recast, explicit tip, or no correction.</p></div></div>
+        <div class="card row-card sm"><svg class="ic big"><use href="#i-clock"/></svg><div><h3>Wait time</h3><p>A hint appears after 5 or 10 seconds of silence.</p></div></div>
+        <div class="card row-card sm dark"><svg class="ic big"><use href="#i-globe"/></svg><div><h3>First-language support</h3><p>A short Korean gloss for beginners, on request.</p></div></div>
+      </div>
+      <div class="chatbox">
+        <div class="bar"><svg class="ic"><use href="#i-chat"/></svg>One learner message, two feedback styles</div>
+        <div class="chat">
+          <div class="msg u"><span class="av"><svg class="ic"><use href="#i-user"/></svg></span><div class="tx">I want coffee.</div></div>
+          <div class="msg" data-step="1"><span class="av"><svg class="ic"><use href="#i-robot"/></svg></span><div class="tx"><span class="chip">Recast</span><br>Oh, <b>a</b> coffee — sure! What size would you like?</div></div>
+          <div class="msg" data-step="2"><span class="av"><svg class="ic"><use href="#i-robot"/></svg></span><div class="tx"><span class="chip dk">Explicit</span><br>Tip: say “<b>a</b> coffee” or “some coffee”.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="take">Feedback style, level and wait time are <em>teaching decisions</em>, not technical ones.</p>
+  <p class="src">Jeon, Lee &amp; Choe (2023).</p>
+</section>
+
+<!-- 13 · LIVE SAMPLE: CAFE ROLE-PLAY -->
+<section class="slide full" data-title="Sample tool: Café Role-play Coach" data-time="3">
+  <header class="head">
+    <p class="kicker">Sample tool · Teaching</p>
+    <h2 class="title">Café Role-play Coach: a speaking-practice chatbot with <em>teacher-set rules</em></h2>
+  </header>
+  <div class="body">
+    <div class="demo-split">
+      <div class="demo" data-src="assets/apps/cafe-roleplay.html" data-poster="assets/apps/shots/cafe-roleplay-chat.png" data-label="cafe-roleplay.html — Café Role-play Coach"></div>
+      <div class="try">
+        <h3>Try it</h3>
+        <ol>
+          <li data-anim="left">Order a drink. Type <b>“I want coffee”</b>.</li>
+          <li data-anim="left">Switch feedback from <b>Recast</b> to <b>Explicit</b>.</li>
+          <li data-anim="left">Turn on <b>Korean support</b> and ask for a hint.</li>
+        </ol>
+        <div class="why" data-anim="up"><b>What to notice:</b> the replies come from a short script and a few rules. No AI model runs here; the <em>design</em> is the point.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 · CASE 2: INTERACTIVE CLASSROOM PLATFORM -->
+<section class="slide" data-title="Interactive activities on students' phones" data-time="2">
+  <header class="head">
+    <p class="kicker">Case 2 · Interactive learning activity</p>
+    <h2 class="title">A class can become <em>interactive</em> on students' own phones</h2>
+  </header>
+  <div class="body">
+    <div class="split b" style="align-items:stretch">
+      <div class="col" style="justify-content:space-between;gap:26px">
+        <div class="flow v" style="gap:40px">
+          <div class="node"><h3>Teacher's screen</h3><p>The slide deck opens an activity.</p></div>
+          <div class="node dark"><h3>Shared database</h3><p>Answers arrive live, anonymously.</p></div>
+          <div class="node"><h3>Students' phones</h3><p>Scan a QR code, then respond.</p></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:14px">
+          <span class="pill tn sm">Poll</span><span class="pill tn sm">Quiz</span><span class="pill tn sm">Word cloud</span><span class="pill tn sm">Group board</span><span class="pill tn sm">Reading task</span>
+        </div>
+      </div>
+      <figure class="shot">
+        <span class="chip">Speaker's project · sample data</span>
+        <div class="win contain"><div class="wb"><span class="dots"><i></i><i></i><i></i></span><span class="url">Live-class platform · teacher view</span></div>
+          <div class="vp"><img alt="Teacher view of a live poll and word cloud with sample data" src="assets/shots/ell-platform.jpg"></div></div>
+        <figcaption>Teacher view: class responses appear on the shared screen.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <p class="take">Polls, quizzes and group boards in <em>one platform</em>, designed around the lesson.</p>
+</section>
+
+<!-- 15 · LIVE SAMPLE: WORD GARDEN -->
+<section class="slide full" data-title="Sample tool: Word Garden" data-time="3">
+  <header class="head">
+    <p class="kicker">Sample tool · Learning</p>
+    <h2 class="title">Word Garden: a vocabulary trainer that adapts to <em>each learner</em></h2>
+  </header>
+  <div class="body">
+    <div class="demo-split">
+      <div class="demo" data-src="assets/apps/vocab-trainer.html" data-poster="assets/apps/shots/vocab-trainer-quiz.png" data-label="vocab-trainer.html — Word Garden"></div>
+      <div class="try">
+        <h3>Try it</h3>
+        <ol>
+          <li data-anim="left">Open <b>Quiz</b> and answer one word.</li>
+          <li data-anim="left">Get one wrong. Watch the word fall back to <b>Box 1</b>.</li>
+          <li data-anim="left">Paste your own list in the <b>Teacher panel</b>.</li>
+        </ol>
+        <div class="why" data-anim="up"><b>What to notice:</b> three Leitner boxes decide what you see next. The teacher's word list goes in; the learner's progress stays in the browser.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 · BUILD VS CHAT -->
+<section class="slide" data-title="What changes when you build" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Why build?</p>
+    <h2 class="title">Building your own tool puts the <em>pedagogy</em> back in your hands, at a price</h2>
+  </header>
+  <div class="body c">
+    <table class="tbl" style="font-size:34px">
+      <thead><tr><th></th><th style="font-size:34px">Asking a general chatbot</th><th class="acc" style="font-size:34px">A tool you build</th></tr></thead>
+      <tbody>
+        <tr><td>Pedagogy</td><td>Re-explained in every chat</td><td>Built into the settings</td></tr>
+        <tr><td>Consistency</td><td>Varies from chat to chat</td><td>Same rules for every learner</td></tr>
+        <tr><td>Records</td><td>Scattered chat histories</td><td>A log you design and export</td></tr>
+        <tr><td>Control</td><td>The provider's interface</td><td>Your layout, your rules</td></tr>
+        <tr><td>Effort</td><td>Minutes</td><td>Hours to days, plus testing and upkeep</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="take">Build when the activity is <em>repeated</em> and the rules <em>matter</em>.</p>
+</section>
+
+<!-- 17 · YOUR TURN -->
+<section class="slide" data-title="Your turn: one learning activity" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Your turn · Teaching &amp; learning</p>
+    <h2 class="title">Start from the <em>learner's activity</em>, not from the tool</h2>
+  </header>
+  <div class="body" style="gap:36px;justify-content:center">
+    <div class="spec" data-anim="up">
+      <div class="fld"><b>My learners</b><i></i></div>
+      <div class="fld"><b>could</b><i></i></div>
+      <div class="fld"><b>and the tool would</b><i></i></div>
+    </div>
+    <div class="prompt"><span class="lab">Think · 1 min</span>Finish the three lines for one activity from your own class or study. Then tell a neighbour.<span class="tm">1 min</span></div>
+  </div>
+  <p class="take">If you can finish those three lines, you have the <em>start of a spec</em>.</p>
+</section>
+
+<!-- ====================================================================== PART 3 · RESEARCH (25:00–40:00) -->
+
+<!-- 18 · DIVIDER 03 -->
+<section class="slide divider" data-title="AI Tools for Research" data-time="0.5">
+  <div class="wrap">
+    <p class="lab">Part</p>
+    <p class="num" data-count="3" data-pad="2">03</p>
+    <h2 class="ttl">AI Tools for Research</h2>
+    <p class="desc">Instruments, data collection, analysis and the routine work around research.</p>
+  </div>
+</section>
+
+<!-- 19 · RESEARCH WORKFLOW MAP -->
+<section class="slide" data-title="Research tools follow the workflow" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Research · the map</p>
+    <h2 class="title">Research tools follow the <em>research workflow</em>, from instrument to report</h2>
+  </header>
+  <div class="body" style="gap:34px;justify-content:center">
+    <div class="chev">
+      <div class="step g">Instrument</div><div class="step">Collect</div><div class="step m">Analyse</div><div class="step d">Automate</div><div class="step g">Report</div>
+    </div>
+    <div class="cards n5" style="gap:20px">
+      <div class="card sm"><svg class="ic big"><use href="#i-edit"/></svg><h3>Instrument</h3><p>An online task or questionnaire with your own logic.</p></div>
+      <div class="card sm"><svg class="ic big"><use href="#i-db"/></svg><h3>Collect</h3><p>Time-stamped logs and a clean CSV export.</p></div>
+      <div class="card sm"><svg class="ic big"><use href="#i-chart"/></svg><h3>Analyse</h3><p>Word counts, concordances, descriptive statistics.</p></div>
+      <div class="card sm dark"><svg class="ic big"><use href="#i-loop"/></svg><h3>Automate</h3><p>Clean transcripts, rename and convert files in batch.</p></div>
+      <div class="card sm"><svg class="ic big"><use href="#i-doc"/></svg><h3>Report</h3><p>Tables and figures you can regenerate in seconds.</p></div>
+    </div>
+  </div>
+  <p class="take">Automating a step is easy to <em>start</em> and important to <em>verify</em>.</p>
+</section>
+
+<!-- 20 · LIVE SAMPLE: TASK LOGGER -->
+<section class="slide full" data-title="Sample tool: Task Logger" data-time="3">
+  <header class="head">
+    <p class="kicker">Sample tool · Research instrument</p>
+    <h2 class="title">Task Logger: a browser task that records <em>every event</em> with a time stamp</h2>
+  </header>
+  <div class="body">
+    <div class="demo-split">
+      <div class="demo" data-src="assets/apps/task-logger.html#researcher" data-poster="assets/apps/shots/task-logger-researcher.png" data-label="task-logger.html — researcher view"></div>
+      <div class="try">
+        <h3>Try it</h3>
+        <ol>
+          <li data-anim="left">Read the <b>researcher view</b>: events, timings, accuracy.</li>
+          <li data-anim="left">Switch the toggle off and <b>run the task</b> as a participant.</li>
+          <li data-anim="left">Return and press <b>Download CSV</b>.</li>
+        </ol>
+        <div class="why" data-anim="up"><b>What to notice:</b> consent comes first, no names are collected, and the export is pseudonymised. All data here are invented.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 21 · DATA COLLECTION + ETHICS -->
+<section class="slide" data-title="A data-collection tool is as ethical as its design" data-time="2">
+  <header class="head">
+    <p class="kicker">Research instrument · design</p>
+    <h2 class="title">A data-collection tool is only as <em>ethical</em> as its design</h2>
+  </header>
+  <div class="body" style="gap:40px;justify-content:center">
+    <div class="flow">
+      <div class="node"><svg class="ic big" style="color:var(--bright)"><use href="#i-user"/></svg><h3>Participant</h3><p>Reads the information sheet and consents.</p></div>
+      <div class="node"><svg class="ic big" style="color:var(--bright)"><use href="#i-laptop"/></svg><h3>Task page</h3><p>Shows items, measures responses.</p></div>
+      <div class="node"><svg class="ic big" style="color:var(--bright)"><use href="#i-db"/></svg><h3>Event log</h3><p>Time stamp, item, response, timing.</p></div>
+      <div class="node dark"><svg class="ic big" style="color:var(--mid)"><use href="#i-file-code"/></svg><h3>CSV export</h3><p>Pseudonymised codes, not names.</p></div>
+    </div>
+    <div class="cards n3" style="gap:24px">
+      <div class="card sm line"><h3>Consent first</h3><p>Nothing is recorded before the participant agrees.</p></div>
+      <div class="card sm line"><h3>No direct identifiers</h3><p>Participant codes, not names or emails.</p></div>
+      <div class="card sm line"><h3>Stored where approved</h3><p>Match the storage to your ethics approval.</p></div>
+    </div>
+  </div>
+  <p class="take">Ethics approval covers the <em>whole tool</em>: where data go, who sees them, how long they stay.</p>
+  <p class="src">BERA (2024), Ethical Guidelines for Educational Research (5th ed.).</p>
+</section>
+
+<!-- 22 · LIVE SAMPLE: TEXT EXPLORER -->
+<section class="slide full" data-title="Sample tool: Text Explorer" data-time="3">
+  <header class="head">
+    <p class="kicker">Sample tool · Analysis</p>
+    <h2 class="title">Text Explorer: word frequencies and <em>concordance lines</em> in your browser</h2>
+  </header>
+  <div class="body">
+    <div class="demo-split">
+      <div class="demo" data-src="assets/apps/text-explorer.html" data-poster="assets/apps/shots/text-explorer.png" data-label="text-explorer.html — Text Explorer"></div>
+      <div class="try">
+        <h3>Try it</h3>
+        <ol>
+          <li data-anim="left">Click a bar to search that word in context.</li>
+          <li data-anim="left">Turn <b>Hide common words</b> off and on.</li>
+          <li data-anim="left">Widen the <b>window</b> to see more context.</li>
+        </ol>
+        <div class="why" data-anim="up"><b>What to notice:</b> counting is easy to automate; interpreting what the counts mean is still yours.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 23 · AUTOMATION -->
+<section class="slide" data-title="Routine chores become a reviewable request" data-time="2">
+  <header class="head">
+    <p class="kicker">Research · automation</p>
+    <h2 class="title">Repetitive research chores become <em>a request you can review</em></h2>
+  </header>
+  <div class="body">
+    <div class="split c top" style="align-items:stretch">
+      <div class="term">
+        <div class="tb"><i></i><i></i><i></i><span>Coding agent · data folder</span></div>
+        <div class="tx">
+          <span class="ln" data-step="1"><span class="p">&gt;</span> <span class="you">Clean the 120 interview transcripts: remove time stamps, replace names with codes, save to /clean, write a log.</span></span>
+          <span class="ln" data-step="2"><span class="dim">Plan: read 3 samples · write script · dry run · run</span></span>
+          <span class="ln" data-step="2"><span class="ok">✓</span> processed 120 files, 0 errors</span>
+          <span class="ln" data-step="2"><span class="ok">✓</span> 14 names replaced by P01–P14 (key saved separately)</span>
+          <span class="ln" data-step="2"><span class="wr">!</span> 3 files had no speaker labels — see log.csv</span>
+        </div>
+      </div>
+      <div class="col" style="gap:22px;justify-content:center">
+        <div class="rule" data-step="3"><span class="tag">You check</span><p style="margin:0">Three files by hand, before you trust the other 117.</p></div>
+        <div class="rule dk" data-step="3"><span class="tag">You keep apart</span><p style="margin:0">The key that links names to codes, away from the data.</p></div>
+        <div class="rule" data-step="3"><span class="tag">You can repeat it</span><p style="margin:0">The script and the log document exactly what was done.</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="take">The agent saves the <em>hours</em>; the checking stays <em>yours</em>.</p>
+</section>
+
+<!-- 24 · LITERATURE WORKFLOW -->
+<section class="slide" data-title="A literature workflow with human gates" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Research · speaker's workflow</p>
+    <h2 class="title">An AI-assisted literature workflow still needs a <em>human gate</em> at every step</h2>
+  </header>
+  <div class="body" style="gap:34px;justify-content:center">
+    <div class="chev">
+      <div class="step g">Search</div><div class="step">Screen</div><div class="step m">Summarise</div><div class="step d">Verify</div><div class="step g">Draft</div>
+    </div>
+    <div class="cards n5" style="gap:20px">
+      <div class="card sm"><span class="num">AI proposes</span><p>Candidate papers for <b>your</b> question.</p></div>
+      <div class="card sm"><span class="num">You decide</span><p>Which papers meet your criteria.</p></div>
+      <div class="card sm"><span class="num">AI drafts</span><p>Summaries. You check them against the paper.</p></div>
+      <div class="card sm dark"><span class="num">You verify</span><p>Every reference against the record, not an AI answer.</p></div>
+      <div class="card sm"><span class="num">You write</span><p>AI may edit for clarity, never invent evidence.</p></div>
+    </div>
+  </div>
+  <p class="take">Check each citation against the <em>record</em> (publisher page or DOI), not the AI's answer.</p>
+</section>
+
+<!-- 25 · DELEGATE OR KEEP -->
+<section class="slide" data-title="Delegate the routine, keep the judgement" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Research · responsibility</p>
+    <h2 class="title">Delegate the <em>routine</em>, keep the <em>judgement</em></h2>
+  </header>
+  <div class="body">
+    <div class="matrix" style="margin:0;padding:0">
+      <div class="q"><span class="tag">Routine · lower stakes</span><h3>Delegate</h3><p style="margin:0">Renaming and converting files, formatting, first-draft code.</p></div>
+      <div class="q"><span class="tag">Judgement · lower stakes</span><h3>Think together</h3><p style="margin:0">Brainstorming, wording, alternative explanations.</p></div>
+      <div class="q"><span class="tag">Routine · higher stakes</span><h3>Delegate, then verify</h3><p style="margin:0">Transcript cleaning, statistics scripts, reference lists.</p></div>
+      <div class="q d"><span class="tag" style="color:var(--mid)">Judgement · higher stakes</span><h3>Keep human</h3><p style="margin:0;color:#E4D8F5">Research design, interpretation, ethics, the claims you publish.</p></div>
+    </div>
+  </div>
+  <p class="take">The higher the stakes, the more of the work <em>stays with you</em>.</p>
+</section>
+
+<!-- ====================================================================== PART 4 · FROM IDEAS TO APPLICATIONS (40:00–50:00) -->
+
+<!-- 26 · DIVIDER 04 -->
+<section class="slide divider" data-title="From Ideas to Applications" data-time="0.5">
+  <div class="wrap">
+    <p class="lab">Part</p>
+    <p class="num" data-count="4" data-pad="2">04</p>
+    <h2 class="ttl">From Ideas to Applications</h2>
+    <p class="desc">How an idea in your head becomes a tool that works — and how to ask for it.</p>
+  </div>
+</section>
+
+<!-- 27 · PIPELINE -->
+<section class="slide" data-title="Six steps from idea to application" data-time="1.5">
+  <header class="head">
+    <p class="kicker">The process</p>
+    <h2 class="title">From idea to application in <em>six steps</em>, with you at the controls</h2>
+  </header>
+  <div class="body" style="gap:40px;justify-content:center">
+    <div class="tl" style="--n:6">
+      <div class="pt"><span class="d-min">Step 1</span><b>Idea</b><h3>One sentence</h3><p>The learner activity or research question.</p></div>
+      <div class="pt"><span class="d-min">Step 2</span><b>Spec</b><h3>Write it down</h3><p>Who, what, rules, data, "done when".</p></div>
+      <div class="pt d"><span class="d-min">Step 3</span><b>Prototype</b><h3>AI builds</h3><p>A first version in minutes.</p></div>
+      <div class="pt"><span class="d-min">Step 4</span><b>Test</b><h3>Try it</h3><p>With sample learners or invented data.</p></div>
+      <div class="pt"><span class="d-min">Step 5</span><b>Refine</b><h3>One change</h3><p>Change one thing at a time.</p></div>
+      <div class="pt"><span class="d-min">Step 6</span><b>Share</b><h3>Pilot</h3><p>Document it and get approval.</p></div>
+    </div>
+    <div class="note">The AI is fastest at step 3. <b>Everything around it is yours.</b></div>
+  </div>
+  <p class="take">The scarce skill is not typing code; it is <em>knowing what to ask for</em> and how to check it.</p>
+</section>
+
+<!-- 28 · SPEC ANATOMY -->
+<section class="slide" data-title="A good request is a short spec" data-time="2">
+  <header class="head">
+    <p class="kicker">The process · step 2</p>
+    <h2 class="title">A good request is a short <em>spec</em>, not a clever prompt</h2>
+  </header>
+  <div class="body c">
+    <div class="cards n3" style="gap:24px">
+      <div class="card sm"><span class="num">Goal</span><p>A café role-play chatbot for speaking practice.</p></div>
+      <div class="card sm"><span class="num">Users</span><p>Adult learners, A2–B1, first language Korean.</p></div>
+      <div class="card sm"><span class="num">Pedagogy</span><p>Recast errors. Offer a hint after 10 seconds of silence.</p></div>
+      <div class="card sm"><span class="num">Content and data</span><p>A scripted café dialogue. No real learner data.</p></div>
+      <div class="card sm"><span class="num">Limits</span><p>One HTML file. Works offline. Exports the session log.</p></div>
+      <div class="card sm dark"><span class="num">Done when</span><p>A learner can order and pay in eight turns.</p></div>
+    </div>
+  </div>
+  <p class="take">If you can write the spec, the AI can write the <em>first version</em>.</p>
+</section>
+
+<!-- 29 · MAKING OF -->
+<section class="slide" data-title="From one request to a working tool" data-time="2.5">
+  <header class="head">
+    <p class="kicker">The process · step 3</p>
+    <h2 class="title">From one request to <em>a working tool</em>, with your judgement in between</h2>
+  </header>
+  <div class="body">
+    <div class="split a top" style="grid-template-columns:7fr 4fr;align-items:stretch">
+      <div class="term">
+        <div class="tb"><i></i><i></i><i></i><span>Coding agent · project folder</span></div>
+        <div class="tx">
+          <span class="ln" data-step="1"><span class="p">&gt;</span> <span class="you">Build a café role-play chatbot for A2–B1 learners. Recast errors, hint after 10 s, Korean gloss on request. One HTML file, works offline, exports the log.</span></span>
+          <span class="ln" data-step="2"><span class="dim">Plan: dialogue script · error rules · settings panel · session log</span></span>
+          <span class="ln" data-step="2"><span class="ok">✓</span> wrote cafe-roleplay.html</span>
+          <span class="ln" data-step="2"><span class="ok">✓</span> ran six test conversations</span>
+          <span class="ln" data-step="2"><span class="wr">!</span> fixed: hint timer kept running after the turn</span>
+          <span class="ln" data-step="2"><span class="ok">✓</span> ready — open cafe-roleplay.html</span>
+        </div>
+      </div>
+      <div class="col" style="gap:22px;justify-content:center">
+        <div class="rule" data-step="1"><span class="tag">You wrote</span><p style="margin:0">The spec: goal, pedagogy, limits.</p></div>
+        <div class="rule dk" data-step="2"><span class="tag">The agent did</span><p style="margin:0">Planned, wrote, ran tests, fixed one bug.</p></div>
+        <div class="rule" data-step="3"><span class="tag">You decide</span><p style="margin:0">Is it good enough for my learners?</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="take">The request is <em>yours</em>; the first draft is the agent's; the verdict is <em>yours</em> again.</p>
+</section>
+
+<!-- 30 · ITERATION -->
+<section class="slide" data-title="Each round adds a pedagogical decision" data-time="1.5">
+  <header class="head">
+    <p class="kicker">The process · steps 4 and 5</p>
+    <h2 class="title">Each round of feedback adds a <em>pedagogical decision</em></h2>
+  </header>
+  <div class="body" style="gap:40px;justify-content:center">
+    <div class="tl" style="--n:3">
+      <div class="pt"><span class="d-min">Version 1</span><b>v1</b><h3>Replies only</h3><p>It works, but the replies feel random and nothing is recorded.</p></div>
+      <div class="pt"><span class="d-min">Version 2</span><b>v2</b><h3>Adds feedback</h3><p>Recast and explicit tips, plus a hint after silence.</p></div>
+      <div class="pt d"><span class="d-min">Version 3</span><b>v3</b><h3>Adds teacher controls</h3><p>Level, Korean gloss and an exportable session log.</p></div>
+    </div>
+    <div class="quote" data-anim="left">Change one thing, test it, keep it or undo it.</div>
+  </div>
+  <p class="take">Small steps are easier to <em>test</em> than one giant request.</p>
+</section>
+
+<!-- 31 · YOUR SPEC CARD -->
+<section class="slide" data-title="Your turn: a spec card" data-time="2">
+  <header class="head">
+    <p class="kicker">Your turn · From ideas to applications</p>
+    <h2 class="title">Try it: write a <em>spec card</em> for a tool of your own</h2>
+  </header>
+  <div class="body" style="gap:34px;justify-content:center">
+    <div class="spec" data-anim="up">
+      <div class="fld"><b>Who is it for?</b><i></i></div>
+      <div class="fld"><b>What does it do?</b><i></i></div>
+      <div class="fld"><b>What must it not do?</b><i></i></div>
+      <div class="fld"><b>Done when…</b><i></i></div>
+    </div>
+    <div class="prompt"><span class="lab">Write · 2 min</span>Fill in the card for your idea. Swap with a neighbour and ask: what would you test first?<span class="tm">2 min</span></div>
+  </div>
+  <p class="take">A spec that a neighbour can <em>test</em> is a spec the AI can build from.</p>
+</section>
+
+<!-- ====================================================================== PART 5 · CRITICAL CONSIDERATIONS & Q&A (50:00–60:00) -->
+
+<!-- 32 · DIVIDER 05 -->
+<section class="slide divider" data-title="Critical Considerations & Q&A" data-time="0.5">
+  <div class="wrap">
+    <p class="lab">Part</p>
+    <p class="num" data-count="5" data-pad="2">05</p>
+    <h2 class="ttl">Critical Considerations &amp; Q&amp;A</h2>
+    <p class="desc">Accuracy, security, research ethics and educational validity — then your questions.</p>
+  </div>
+</section>
+
+<!-- 33 · FOUR CHECKS -->
+<section class="slide" data-title="Four checks for AI-built tools" data-time="2">
+  <header class="head">
+    <p class="kicker">Critical considerations</p>
+    <h2 class="title">Four checks before you trust what an AI has built</h2>
+  </header>
+  <div class="body" style="gap:30px;justify-content:center">
+    <div class="cards n4" style="gap:22px">
+      <div class="card"><svg class="ic big"><use href="#i-check"/></svg><h3>Accuracy</h3><p>Is the content correct, and is the result right?</p><span class="foot">Check against a source</span></div>
+      <div class="card"><svg class="ic big"><use href="#i-lock"/></svg><h3>Security &amp; privacy</h3><p>Where do keys, data and logs go?</p><span class="foot">No real learner data in prompts</span></div>
+      <div class="card"><svg class="ic big"><use href="#i-scale"/></svg><h3>Research ethics</h3><p>Is there consent, approval and transparency?</p><span class="foot">Approval covers the tool</span></div>
+      <div class="card dark"><svg class="ic big"><use href="#i-target"/></svg><h3>Educational validity</h3><p>Does it help learning, or only look good?</p><span class="foot">Test with real learners</span></div>
+    </div>
+    <div class="note" data-step="1">In a field experiment with high-school maths students, unrestricted GPT access raised practice scores by 48% but <b>lowered exam scores by 17%</b> once access was removed (Bastani et al., 2025).</div>
+  </div>
+  <p class="take">A tool that <em>feels</em> helpful can still fail the learner.</p>
+  <p class="src">Kasneci et al. (2023); Bastani et al. (2025, PNAS); BERA (2024).</p>
+</section>
+
+<!-- 34 · VERIFY GATES -->
+<section class="slide" data-title="Treat it as a prototype until it passes" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Critical considerations · how to check</p>
+    <h2 class="title">Treat every AI-built tool as a <em>prototype</em> until it passes your own gates</h2>
+  </header>
+  <div class="body" style="gap:34px;justify-content:center">
+    <div class="flow">
+      <div class="node"><span class="tag">Gate 1</span><h3>Run it</h3><p>Does it work, and does it fail safely?</p></div>
+      <div class="node"><span class="tag">Gate 2</span><h3>Known cases</h3><p>Does it give the right answers where you know them?</p></div>
+      <div class="node"><span class="tag">Gate 3</span><h3>Peer check</h3><p>Does a colleague agree it is sound?</p></div>
+      <div class="node"><span class="tag">Gate 4</span><h3>Pilot</h3><p>Does it help real learners or real data?</p></div>
+      <div class="node dark"><span class="tag">Gate 5</span><h3>Document</h3><p>Record what was built, how, and with which AI.</p></div>
+    </div>
+    <div class="note">Until a tool passes your gates, call it a <b>prototype</b> — and say so to your learners and participants.</div>
+  </div>
+  <p class="take">Responsibility does not transfer to the tool: <em>you remain accountable</em>.</p>
+</section>
+
+<!-- 35 · SECURITY & PRIVACY -->
+<section class="slide" data-title="Security and privacy do's and don'ts" data-time="1">
+  <header class="head">
+    <p class="kicker">Critical considerations · security and privacy</p>
+    <h2 class="title">Security and privacy are decisions you make <em>before</em> you build</h2>
+  </header>
+  <div class="body c">
+    <div class="split b top" style="font-size:32px">
+      <div class="card line"><span class="tag">Do</span>
+        <ul class="chk">
+          <li><svg class="ic"><use href="#i-check"/></svg><span>Test with invented or anonymised data.</span></li>
+          <li><svg class="ic"><use href="#i-check"/></svg><span>Keep keys and passwords out of the page code.</span></li>
+          <li><svg class="ic"><use href="#i-check"/></svg><span>Store data where your approval says.</span></li>
+          <li><svg class="ic"><use href="#i-check"/></svg><span>Delete logs you no longer need.</span></li>
+        </ul>
+      </div>
+      <div class="card dark"><span class="tag" style="color:var(--mid)">Do not</span>
+        <ul class="chk">
+          <li class="no"><svg class="ic" style="color:#FFB38A"><use href="#i-x"/></svg><span>Paste real learner or participant data into a chatbot.</span></li>
+          <li class="no"><svg class="ic" style="color:#FFB38A"><use href="#i-x"/></svg><span>Share a link that exposes all the data.</span></li>
+          <li class="no"><svg class="ic" style="color:#FFB38A"><use href="#i-x"/></svg><span>Believe "it is secure" because the AI says so.</span></li>
+          <li class="no"><svg class="ic" style="color:#FFB38A"><use href="#i-x"/></svg><span>Deploy code you have not had checked.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p class="take">If the data are real, the <em>stakes</em> are real.</p>
+  <p class="src">UNESCO (2023).</p>
+</section>
+
+<!-- 36 · TAKEAWAYS -->
+<section class="slide" data-title="Three takeaways" data-time="1.5">
+  <header class="head">
+    <p class="kicker">Summary</p>
+    <h2 class="title">Three things to take away, and <em>one thing to do</em> this week</h2>
+  </header>
+  <div class="body" style="gap:36px;justify-content:center">
+    <div class="cards">
+      <div class="card"><span class="num">01</span><h3>Create, not only use</h3><p>Chatbots answer. Coding tools build, test and automate.</p></div>
+      <div class="card"><span class="num">02</span><h3>Design for a purpose</h3><p>Start from the learner activity or the research question.</p></div>
+      <div class="card dark"><span class="num">03</span><h3>Check before you trust</h3><p>Accuracy, security, ethics, validity — and stay accountable.</p></div>
+    </div>
+    <div class="prompt"><span class="lab">This week</span>Pick one repeated task. Write its spec card. Build a tiny version — and check it.</div>
+  </div>
+  <p class="take">From <em>using</em> AI tools to <em>creating</em> tools with AI.</p>
+</section>
+
+<!-- 37 · CLOSING + Q&A -->
+<section class="slide closing" data-title="Thank you" data-time="3">
+  <div class="wrap">
+    <h2 class="ttl">Thank you</h2>
+    <p class="msg2">Questions and discussion</p>
+  </div>
+  <p class="who">Seongyong Lee<span>University College London</span><span>Institute of Education (IOE)</span></p>
+</section>
+
+</main>
+
+<script src="engine/icons.js?v=1"></script>
+<script src="engine/deck.js?v=2"></script>
+</body>
+</html>

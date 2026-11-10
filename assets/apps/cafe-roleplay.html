@@ -1,0 +1,532 @@
+<!-- Sample app produced for the workshop 'Beyond Chatbots' — scripted demo, no AI model inside. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Café Role-play Coach</title>
+<style>
+:root{
+  --dark:#361A54; --bright:#993BFF; --mid:#BA82FF; --tint:#EEDEFF; --paper:#FAFAFA; --ink:#2A2233; --maroon:#651D32; --ok:#2E7D5B;
+  --line:#E0D1F2; --muted:#5F5472;
+  --font:"Segoe UI","Helvetica Neue",Arial,"Noto Sans KR","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{font:16px/1.45 var(--font);color:var(--ink);background:var(--paper);display:flex;flex-direction:column;overflow:hidden}
+:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* top bar */
+.top{flex:none;height:44px;background:var(--dark);color:#fff;display:flex;align-items:center;gap:12px;padding:0 16px}
+.top svg{flex:none}
+.top h1{margin:0;font-size:18px;font-weight:600;letter-spacing:.01em;white-space:nowrap}
+.tag{background:var(--mid);color:var(--dark);font-size:15px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:1px 9px;border-radius:3px;white-space:nowrap}
+.ribbon{margin-left:auto;background:var(--tint);color:var(--dark);font-size:15px;padding:3px 10px;border-radius:3px;white-space:nowrap}
+.ribbon b{color:var(--maroon);letter-spacing:.06em}
+
+/* layout */
+main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:12px;padding:12px}
+.left{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0;overflow-y:auto}
+.card{background:#fff;border:1px solid var(--line);border-radius:6px}
+.chat{flex:1 0 auto;min-height:300px;display:flex;flex-direction:column;overflow:hidden}
+.chat-head{flex:none;display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.avatar{flex:none;width:38px;height:38px;border-radius:4px;background:var(--dark);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px}
+.who{font-size:18px;font-weight:600;line-height:1.2}
+.sub{font-size:15px;color:var(--muted);line-height:1.2}
+.turn{margin-left:auto;font-size:15px;font-weight:600;color:var(--dark);background:var(--tint);padding:3px 10px;border-radius:3px;white-space:nowrap}
+
+.tracker{flex:none;list-style:none;margin:0;padding:8px 16px;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line);background:var(--paper)}
+.tracker li{font-size:15px;line-height:1.3;padding:1px 9px;border:1px dashed var(--mid);border-radius:3px;color:var(--muted);background:#fff}
+.tracker li.on{border:1px solid var(--bright);background:var(--tint);color:var(--dark);font-weight:600}
+
+.msgs{flex:1 1 0px;min-height:90px;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.msg{display:flex;flex-direction:column;max-width:80%}
+.msg.bot{align-self:flex-start}
+.msg.me{align-self:flex-end;align-items:flex-end}
+.bubble{font-size:17px;line-height:1.4;padding:9px 14px;border-radius:6px;overflow-wrap:anywhere}
+.bot .bubble{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.me .bubble{background:var(--bright);color:#fff}
+.recast{background:var(--tint);border-bottom:2px solid var(--mid);padding:0 3px;margin:0 -3px;color:var(--dark)}
+.kr{display:none;font-size:15px;color:var(--muted);margin-top:3px}
+.kr-on .kr{display:block}
+.hint .kr{margin-top:0}
+.kr-on .hint .kr{display:inline}
+.note{margin-top:5px;max-width:100%;font-size:15px;line-height:1.35;padding:5px 10px;background:var(--tint);border-left:4px solid var(--maroon);color:var(--dark);border-radius:0 4px 4px 0}
+.note b{color:var(--maroon)}
+.note.soft{border-left-color:var(--mid)}
+.note.soft b{color:var(--dark)}
+.typing{display:flex;gap:5px;padding:13px 14px}
+.typing i{width:8px;height:8px;border-radius:50%;background:var(--mid);animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.brief{font-size:15px;line-height:1.4;color:var(--muted);background:#fff;border:1px dashed var(--mid);border-radius:4px;padding:6px 12px}
+.brief b{color:var(--dark)}
+.sys{align-self:center;text-align:center;font-size:15px;color:var(--dark);background:var(--tint);padding:8px 14px;border-radius:4px}
+.sys button{margin-left:8px}
+
+.hint{flex:none;margin:0 16px 6px;padding:6px 12px;font-size:16px;line-height:1.35;background:var(--tint);border-left:4px solid var(--bright);color:var(--dark);border-radius:0 4px 4px 0}
+.hint strong{margin-right:6px}
+.chips{flex:none;display:flex;flex-wrap:wrap;gap:8px;padding:6px 16px 8px}
+.chip{font-size:16px;padding:6px 12px;background:#fff;color:var(--dark);border:1px solid var(--bright);border-radius:6px}
+.chip:hover{background:var(--tint)}
+.composer{flex:none;display:flex;gap:8px;padding:8px 16px 14px}
+.composer input{flex:1;min-width:0;font:inherit;font-size:17px;padding:9px 12px;border:1px solid #bba8d3;border-radius:6px;background:#fff;color:var(--ink)}
+.composer input:disabled{background:#f1ecf6}
+.btn{font-size:16px;font-weight:600;padding:7px 14px;border-radius:6px;border:1px solid var(--dark);background:#fff;color:var(--dark)}
+.btn:hover{background:var(--tint)}
+.btn.primary{background:var(--bright);border-color:var(--bright);color:#fff}
+.btn.primary:hover{background:var(--dark);border-color:var(--dark)}
+.btn.danger{border-color:var(--maroon);color:var(--maroon)}
+.btn.danger:hover{background:#f6e9ed}
+.btn:disabled{opacity:.5;cursor:default}
+
+/* session log */
+.logc{flex:none;display:flex;flex-direction:column}
+.log-head{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 6px}
+.log-toggle{flex:1;display:flex;align-items:center;gap:8px;text-align:left;background:none;border:0;padding:4px 8px;font-size:17px;font-weight:600;color:var(--dark);border-radius:4px}
+.log-toggle small{font-size:15px;font-weight:400;color:var(--muted)}
+.log-toggle svg{transition:transform .15s}
+.log-toggle[aria-expanded="true"] svg{transform:rotate(90deg)}
+.log-body{overflow:auto;border-top:1px solid var(--line);max-height:134px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{position:sticky;top:0;background:var(--tint);color:var(--dark);text-align:left;font-weight:600;padding:5px 10px;white-space:nowrap}
+td{padding:5px 10px;border-top:1px solid var(--line);vertical-align:top}
+td.n,td.t{white-space:nowrap;color:var(--muted)}
+td.flag.bad{color:var(--maroon);font-weight:600}
+td.empty{color:var(--muted);text-align:center;padding:12px}
+
+/* settings */
+.settings{padding:14px 16px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;min-height:0}
+.settings h2{margin:0;font-size:18px;font-weight:600;color:var(--dark);display:flex;align-items:center;gap:8px}
+.settings h2::before{content:"";width:4px;height:20px;background:var(--bright);border-radius:2px}
+.grp>.lab{display:block;font-size:17px;font-weight:600;color:var(--dark);margin-bottom:5px}
+.help{margin:4px 0 0;font-size:15px;line-height:1.35;color:var(--muted)}
+.seg{display:flex;border:1px solid var(--bright);border-radius:6px;overflow:hidden}
+.seg label{flex:1;position:relative;cursor:pointer}
+.seg input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.seg span{display:block;text-align:center;padding:6px 4px;font-size:16px;font-weight:600;color:var(--dark);background:#fff}
+.seg label+label span{border-left:1px solid var(--mid)}
+.seg input:checked+span{background:var(--bright);color:#fff}
+.seg input:focus-visible+span{outline:3px solid var(--dark);outline-offset:-3px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.row .lab{font-size:17px;font-weight:600;color:var(--dark)}
+.sw{position:relative;cursor:pointer}
+.sw input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.trk{display:block;width:46px;height:26px;border-radius:4px;background:#c9bcdb;position:relative}
+.trk::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:2px;transition:left .15s}
+.sw input:checked+.trk{background:var(--bright)}
+.sw input:checked+.trk::after{left:23px}
+.sw input:focus-visible+.trk{outline:3px solid var(--dark);outline-offset:2px}
+select{font:inherit;font-size:16px;padding:5px 8px;border:1px solid var(--bright);border-radius:6px;background:#fff;color:var(--dark)}
+.engine{margin-top:auto;padding:9px 12px;background:var(--paper);border:1px solid var(--line);border-radius:4px;font-size:15px;line-height:1.35;color:var(--muted)}
+.engine b{color:var(--dark)}
+
+@media (max-width:900px){main{grid-template-columns:minmax(0,1fr) 262px;gap:10px;padding:10px}.ribbon{font-size:15px}.msg{max-width:90%}}
+@media (max-height:560px){
+  .engine,.help{display:none}.settings{gap:10px;padding:10px 12px}.chat-head{padding:6px 12px}.avatar{width:32px;height:32px}
+  .tracker{padding:5px 12px}.msgs{padding:8px 12px}.chips{padding:4px 12px 6px}.composer{padding:6px 12px 10px}.log-body{max-height:104px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="square" aria-hidden="true"><path d="M4 9h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9z"/><path d="M16 11h2a2 2 0 0 1 0 4h-2"/><path d="M8 3v3M12 3v3"/></svg>
+  <h1>Café Role-play Coach</h1><span class="tag">Sample app</span>
+  <span class="ribbon"><b>DEMO</b> · scripted replies, no live AI model</span>
+</header>
+
+<main>
+  <div class="left">
+    <section class="card chat" id="chat" aria-label="Chat with Mia, barista">
+      <div class="chat-head">
+        <div class="avatar" aria-hidden="true">M</div>
+        <div><div class="who">Mia, barista</div><div class="sub">Blue Door Café · ordering a drink</div></div>
+        <div class="turn" id="turnBadge">Turn 0 / 8</div>
+      </div>
+      <ul class="tracker" id="tracker" aria-label="Order progress">
+        <li data-k="drink">Drink</li><li data-k="size">Size</li><li data-k="temp">Hot / iced</li><li data-k="where">Here / go</li><li data-k="name">Name</li><li data-k="pay">Pay</li>
+      </ul>
+      <div class="msgs" id="msgs" role="log" aria-live="polite" aria-label="Conversation with Mia"></div>
+      <div class="hint" id="hint" role="status" hidden></div>
+      <div class="chips" id="chips" role="group" aria-label="Suggested replies"></div>
+      <form class="composer" id="form" autocomplete="off">
+        <label class="sr" for="inp">Your reply to Mia</label>
+        <input id="inp" type="text" placeholder="Type your reply to Mia…" maxlength="160">
+        <button class="btn primary" type="submit" id="sendBtn">Send</button>
+      </form>
+    </section>
+
+    <section class="card logc" id="logc" aria-label="Session log">
+      <div class="log-head">
+        <button class="log-toggle" id="logToggle" type="button" aria-expanded="false" aria-controls="logBody">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 2l5 5-5 5"/></svg>
+          Session log <small id="logCount">0 turns</small>
+        </button>
+        <button class="btn" type="button" id="exportBtn">Export log (JSON)</button>
+        <button class="btn danger" type="button" id="restartBtn">Restart</button>
+      </div>
+      <div class="log-body" id="logBody" hidden>
+        <table>
+          <thead><tr><th>Turn</th><th>Learner said</th><th>Flagged issue</th><th>Feedback</th><th>Time</th></tr></thead>
+          <tbody id="logRows"><tr><td class="empty" colspan="5">No turns yet. Send a reply and it is logged here.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <aside class="card settings" aria-label="Teacher settings">
+    <h2>Teacher settings</h2>
+    <div class="grp" role="radiogroup" aria-labelledby="l-level">
+      <span class="lab" id="l-level">Level</span>
+      <div class="seg">
+        <label><input type="radio" name="level" value="A2"><span>A2</span></label>
+        <label><input type="radio" name="level" value="B1" checked><span>B1</span></label>
+        <label><input type="radio" name="level" value="B2"><span>B2</span></label>
+      </div>
+      <p class="help">Changes Mia's sentence length and the hint wording.</p>
+    </div>
+    <div class="grp" role="radiogroup" aria-labelledby="l-fb">
+      <span class="lab" id="l-fb">Feedback style</span>
+      <div class="seg">
+        <label><input type="radio" name="fb" value="recast" checked><span>Recast</span></label>
+        <label><input type="radio" name="fb" value="explicit"><span>Explicit</span></label>
+        <label><input type="radio" name="fb" value="off"><span>Off</span></label>
+      </div>
+      <p class="help">Recast: Mia models the correct form. Explicit: a tip under the message.</p>
+    </div>
+    <div class="grp" role="radiogroup" aria-labelledby="l-hint">
+      <span class="lab" id="l-hint">Hint after silence</span>
+      <div class="seg">
+        <label><input type="radio" name="hint" value="0"><span>Off</span></label>
+        <label><input type="radio" name="hint" value="5"><span>5 s</span></label>
+        <label><input type="radio" name="hint" value="10" checked><span>10 s</span></label>
+      </div>
+    </div>
+    <div class="row">
+      <span class="lab" id="l-kr">Korean support</span>
+      <label class="sw"><input type="checkbox" id="kr" role="switch" aria-labelledby="l-kr"><span class="trk"></span></label>
+    </div>
+    <div class="row">
+      <label class="lab" for="max">Max turns</label>
+      <select id="max"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option></select>
+    </div>
+    <p class="engine"><b>How it works:</b> keywords and a few regex rules pick a reply from a script. No language model runs here.</p>
+  </aside>
+</main>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var cap=function(s){return s.charAt(0).toUpperCase()+s.slice(1)};
+var S={level:'B1',fb:'recast',hint:10,kr:false,max:8};
+var LV={A2:0,B1:1,B2:2};
+var STAGES=['drink','size','temp','where','name','pay'];
+var G,busy=false,hintTimer=null;
+
+/* ---------- script content ---------- */
+var DRINKS='flat white|cold brew|hot chocolate|green tea|black tea|latte|cappuccino|americano|espresso|mocha|chai|tea|coffee';
+var ADJ='(?:iced|hot|cold|large|small|medium|big|regular|decaf)';
+var PRICE={latte:4.5,cappuccino:4.5,americano:3.5,espresso:3,mocha:5,'flat white':4.75,'cold brew':4.25,'hot chocolate':4.25,chai:4.5,'green tea':3.25,'black tea':3.25,tea:3.25,coffee:3.5};
+var SIZEADD={small:-0.5,medium:0,large:0.75};
+var OPEN=['Good morning! Welcome to Blue Door Café. What would you like?','Good morning! Welcome to Blue Door Café. What can I get you?','Good morning, and welcome to Blue Door Café! What can I get started for you today?'];
+var Q={
+  drink:['What would you like to drink?','What can I get you today?','What can I get started for you this morning? We have a seasonal special today, too.'],
+  size:['What size? Small, medium, or large?','What size would you like: small, medium or large?','Which size would you prefer? We do small, medium and large, though most people find the medium is plenty.'],
+  temp:['Hot or iced?','Would you like it hot or iced?','Would you like that served hot, or would you rather have it over ice?'],
+  where:['For here or to go?','Is that for here or to go?','Will you be having that here in the café, or taking it with you today?'],
+  name:['Your name, please?','Can I have a name for the order?','And could I get a name for the order, so we can call you when it is ready?'],
+  pay:['It is {p}. Cash or card?','That comes to {p}. Would you like to pay by cash or card?','That comes to {p} in total. How would you like to pay: cash or card?']
+};
+var KRQ={drink:'무엇을 드릴까요?',size:'사이즈는 어떻게 하시겠어요?',temp:'따뜻하게 드릴까요, 차갑게 드릴까요?',where:'매장에서 드시나요, 포장하시나요?',name:'주문자 성함이 어떻게 되세요?',pay:'현금과 카드 중 어떻게 결제하시겠어요?',close:'곧 음료가 준비됩니다. 좋은 하루 보내세요!'};
+var KRH={drink:'라떼 한 잔 주세요',size:'미디엄 사이즈로 주세요',temp:'따뜻한 걸로 주세요',where:'여기서 먹을게요',name:'제 이름은 진이에요',pay:'카드로 계산할게요',close:'감사합니다!'};
+var CLOSE=[
+  'Thank you, {n}! Your {o} will be ready soon. Have a nice day!',
+  'Thank you, {n}. Your {o} will be ready in a couple of minutes. Have a lovely day!',
+  'Perfect, thank you, {n}. We will call your name as soon as your {o} is ready, so feel free to take a seat. Enjoy your morning!'
+];
+var BYE=['You are welcome, {n}! See you next time.','You are welcome, {n}! Enjoy your drink, and see you next time.','You are welcome, {n}. It was a pleasure, and we hope to see you again soon!'];
+var WRAP=['Time is up for today. Well done!','That is all the time we have for today. Well done!','That is all the time we have for this session. Nicely done! Have a look at the log to see what to practise next.'];
+var NICE=['Nice to meet you, {n}!','Nice to meet you, {n}.','It is lovely to meet you, {n}.'];
+var ACK={fill:[['OK!','Sure!','Good.'],['Sure!','Great choice.','Got it.'],['Certainly.','Excellent choice.','Lovely, that works for me.']],
+  word:['OK','sure','certainly']};
+var CHIPS={
+  drink:[['A latte, please.','A cappuccino, please.','An americano, please.'],['Can I have a latte, please?','I’d like a mocha, please.','Could I get a chai, please?'],['I think I’ll have a latte, please.','Could I get a large flat white, please?','I’d like a cappuccino, please, if you have one.']],
+  size:[['Medium, please.','Small, please.','Large, please.'],['A medium, please.','I’d like a small, please.','Could I have a large, please?'],['I think I’ll go for a medium, please.','A small would be perfect, thanks.','I’d like the large, please.']],
+  temp:[['Hot, please.','Iced, please.','Hot.'],['Hot, please.','I’d like it iced, please.','Iced, please.'],['I’ll have it hot, please.','I’d like it iced, please.','Could you make it iced, please?']],
+  where:[['For here.','To go, please.','To go.'],['For here, please.','To go, please.','I’ll have it here, thanks.'],['I’ll have it here, thanks.','To go, please. I’m in a bit of a hurry.','For here, please.']],
+  name:[['Jin.','My name is Mina.','I’m Sam.'],['My name is Jin.','It’s Mina.','Under the name Sam, please.'],['My name is Jin.','You can put it under Mina, please.','It’s Sam, S-A-M.']],
+  pay:[['Card, please.','Cash, please.','By card.'],['I’ll pay by card, please.','Cash, please.','Can I pay by card, please?'],['I’ll pay by card, please.','Cash, if that is okay.','Could I pay with my phone, please?']],
+  close:[['Thank you!','Thanks, bye!','Thank you. You too!'],['Thank you very much!','Thanks, you too!','Thank you, have a nice day!'],['Thanks so much, have a great day!','Thank you, see you tomorrow!','Much appreciated. Enjoy your morning!']]
+};
+var LEAD=['Say:','Try:','Try a full sentence:'];
+
+/* ---------- error rules ---------- */
+var NP_RE=new RegExp('\\b(?:(a|an|the|some|one)\\s+)?((?:'+ADJ+'\\s+)*)('+DRINKS+')\\b','i');
+function findNP(t){
+  var m=t.match(NP_RE); if(!m) return null;
+  var adj=(m[2]||'').toLowerCase().trim(), dr=m[3].toLowerCase(), ph=(adj?adj+' ':'')+dr;
+  var art=m[1]&&/^(a|an)$/i.test(m[1])?m[1].toLowerCase():(/^[aeiou]/.test(ph)?'an':'a');
+  return {np:art+' '+ph,mass:!adj&&/^(coffee|tea|green tea|black tea)$/.test(dr)};
+}
+var W=function(){return ACK.word[LV[S.level]]};
+var RULES=[
+  {id:'wanting',label:'"am wanting" (stative verb)',re:/\bi(?:['’]m|\s+am)\s+wanting\b/i,
+   tip:function(){return 'Say “I want …” or “I’d like …”. “Want” is not used with -ing.'},
+   recast:function(c){return c.np?'Oh, you’d like '+c.np+' — '+W()+'!':'Oh, you’d like that — '+W()+'!'}},
+  {id:'order',label:'Word order (I coffee want)',re:new RegExp('\\bi\\s+(?:'+ADJ+'\\s+)*(?:'+DRINKS+')\\s+(?:want|need|like)\\b','i'),
+   tip:function(c){return 'Word order: say “I want '+(c.np||'a coffee')+'”.'},
+   recast:function(c){return 'Oh, you want '+(c.np||'a coffee')+' — '+W()+'!'}},
+  {id:'direct',label:'Too direct ("Give me …")',re:/\bgive me\b/i,
+   tip:function(){return '“Give me …” sounds too direct. Try “Can I have …?” or “I’d like …”.'},
+   recast:function(c){return 'Of course, you’d like '+(c.np||'that')+'. Coming right up!'}},
+  {id:'article',label:'Missing article (a / an / some)',
+   re:new RegExp('\\b(?:want|need|have|get|take|order|(?:\'d|’d|would)\\s+like)\\s+(?:'+ADJ+'\\s+)*(?:'+DRINKS+')\\b','i'),
+   tip:function(c){return c.mass?'Say “'+c.np+'” or “some '+c.np.replace(/^an? /,'')+'”.':'Say “'+(c.np||'a latte')+'”.'},
+   recast:function(c){return 'Oh, '+(c.np||'a coffee')+' — '+W()+'!'}}
+];
+function detect(t){
+  var np=findNP(t)||{np:null,mass:false}, f=[];
+  RULES.forEach(function(r){ if(r.re.test(t)) f.push({id:r.id,label:r.label,tip:r.tip(np),recast:r.recast(np),kind:'error'}); });
+  var asks=/\b(want|need|have|get|give me|order|would like|i['’]d like|can i|could i|may i)\b/i.test(t);
+  var polite=/\b(please|thanks?|thank you|cheers)\b/i.test(t);
+  if(asks&&!polite&&!f.some(function(x){return x.id==='direct'})){
+    f.push({id:'polite',label:'Politeness: no “please” (note)',tip:'Add “please” to sound polite, e.g. “A latte, please.”',
+      recast:np.np?cap(np.np)+', please — '+W()+'!':'Of course!',kind:'note'});
+  }
+  return f;
+}
+
+/* ---------- slot extraction ---------- */
+var SIZEMAP={small:'small',medium:'medium',regular:'medium',large:'large',big:'large'};
+var NAME_STOP='a an the in fine good ok okay sorry not so very happy ready here going just also still yes no thanks thank please hello hi hey hungry tired late busy from at on to with for'.split(' ');
+var LETTER='A-Za-z\\u3131-\\u318E\\uAC00-\\uD7A3';
+function findName(t,stage,others){
+  var m=t.match(new RegExp('\\b(?:my name(?:\\s+is|[\'’]s)|name[\'’]s|call me|under(?:\\s+the\\s+name)?)\\s+(['+LETTER+'][' +LETTER+'\'-]{0,19})','i'));
+  if(!m&&stage==='name') m=t.match(new RegExp('\\b(?:it[\'’]s|i[\'’]m|i\\s+am|this\\s+is)\\s+(['+LETTER+'][' +LETTER+'\'-]{0,19})','i'));
+  if(m&&NAME_STOP.indexOf(m[1].toLowerCase())<0) return cap(m[1]);
+  if(stage==='name'&&!others){
+    var w=t.replace(/[.!?,]/g,' ').trim().split(/\s+/);
+    if(w.length&&w.length<=2&&new RegExp('^['+LETTER+'\'-]+$').test(w.join(''))&&NAME_STOP.indexOf(w[0].toLowerCase())<0) return w.map(cap).join(' ');
+  }
+  return null;
+}
+function extract(t,stage){
+  var low=t.toLowerCase(),o={},m;
+  if((m=low.match(new RegExp('\\b('+DRINKS+')\\b')))) o.drink=m[1];
+  if((m=low.match(/\b(small|medium|regular|large|big)\b/))) o.size=SIZEMAP[m[1]];
+  if(/\b(iced|ice|cold)\b/.test(low)) o.temp='iced'; else if(/\b(hot|warm)\b/.test(low)) o.temp='hot';
+  if(/\bto[- ]?go\b|\btake[- ]?(away|out)\b|\btakeaway\b|\btakeout\b/.test(low)) o.where='to go';
+  else if(/\bfor here\b|\bdine[- ]in\b|\beat in\b|\bin the (caf[eé]|shop)\b|\bsit (down|here|in)\b|\bstay\b/.test(low)||(stage==='where'&&/\bhere\b/.test(low))) o.where='for here';
+  if((m=low.match(/\b(card|credit|debit|visa|cash|phone|apple pay|google pay|mobile|tap)\b/))) o.pay=/cash/.test(m[1])?'cash':/phone|pay|mobile/.test(m[1])?'mobile':'card';
+  var n=findName(t,stage,Object.keys(o).length>0); if(n) o.name=n;
+  return o;
+}
+var RE={
+  price:/\bhow much\b|\bprice\b|\bcost\b/i,
+  menu:/\bmenu\b|\brecommend|\bspecials?\b|\bwhat do you (have|serve)\b|\bsuggest/i,
+  repeat:/\b(pardon|repeat|say that again|once more|don'?t understand|do not understand|slowly|what did you say)\b|^\s*(what|sorry|huh)\s*\??\s*$/i,
+  thanks:/\b(thanks?|thank you|cheers|appreciate)\b/i,
+  greet:/^\s*(hi|hello|hey|good (morning|afternoon|evening)|morning)\b/i
+};
+
+/* ---------- dialogue engine ---------- */
+function nextStage(){ for(var i=0;i<STAGES.length;i++) if(!G.slots[STAGES[i]]) return STAGES[i]; return 'close'; }
+function money(d,s){
+  d=d||G.slots.drink||'latte'; s=s||G.slots.size||'medium';
+  return '$'+((PRICE[d]||4)+(SIZEADD[s]||0)).toFixed(2);
+}
+function question(stage,lv){
+  if(stage==='close') return CLOSE[lv].replace('{n}',G.slots.name||'friend').replace('{o}',orderText());
+  return Q[stage][lv].replace('{p}',money());
+}
+function orderText(){ var s=G.slots; return [s.size,s.temp,s.drink].filter(Boolean).join(' '); }
+function hintText(){
+  var st=nextStage(), lv=LV[S.level];
+  return {en:LEAD[lv]+' “'+CHIPS[st][lv][0]+'”', kr:KRH[st]};
+}
+function plan(text){
+  var lv=LV[S.level], stage=nextStage(), issues=detect(text), kind, got={}, parts=[], low=text.toLowerCase();
+  G.turn++;
+  if(stage==='close') kind='bye';
+  else if(RE.price.test(low)) kind='price';
+  else if(RE.menu.test(low)) kind='menu';
+  else if(RE.repeat.test(low)) kind='repeat';
+  else{
+    got=extract(text,stage);
+    kind=Object.keys(got).length?'fill':RE.thanks.test(low)?'thanks':RE.greet.test(low)?'greet':'fallback';
+  }
+  for(var k in got) G.slots[k]=got[k];
+  var ns=nextStage(), q=question(ns,lv), krq=KRQ[ns], lead='', recast=null, done=false;
+  var main=issues.filter(function(i){return i.kind==='error'})[0]||issues[0];
+  if(kind==='fill'&&main&&S.fb==='recast') recast=main.recast;
+  if(kind==='fill'){
+    if(ns==='close'&&G.slots.pay){ q=CLOSE[lv].replace('{n}',G.slots.name||'friend').replace('{o}',orderText()); }
+    lead=ns==='close'?'':got.name?NICE[lv].replace('{n}',got.name):ACK.fill[lv][G.turn%3];
+  }else if(kind==='price'){
+    var am=low.match(new RegExp('\\b('+DRINKS+')\\b')), pd=am?am[1]:G.slots.drink;
+    lead=pd?'A '+(G.slots.size||'medium')+' '+pd+' is '+money(pd)+'.':'Our drinks are between $3 and $5.';
+  }else if(kind==='menu'){
+    lead=lv===0?'We have latte, cappuccino, americano, mocha, and tea.':'We have lattes, cappuccinos, americanos, mochas and tea. '+(lv===2?'The oat-milk latte is the most popular drink today.':'The latte is our most popular drink.');
+  }else if(kind==='repeat'){
+    lead='Sure, let me say that more simply.'; q=Q[ns==='close'?'drink':ns][0].replace('{p}',money());
+  }else if(kind==='thanks'){ lead='You are welcome!';
+  }else if(kind==='greet'){ lead=['Hello!','Hi there!','Hello, and welcome!'][lv];
+  }else if(kind==='fallback'){ lead='Sorry, could you say that another way?'; }
+  if(kind==='bye'){
+    parts.push({t:BYE[lv].replace('{n}',G.slots.name||'friend'),kr:'천만에요! 또 오세요.'}); done=true;
+  }else{
+    if(recast){ parts.push({m:recast,t:' '+(lead&&kind!=='fill'?lead+' ':'')+q}); }
+    else parts.push({t:(lead?lead+' ':'')+q});
+    parts[0].kr=(kind==='fallback'?'죄송해요, 다른 말로 다시 말씀해 주시겠어요? ':'')+krq;
+  }
+  if(G.turn>=S.max&&!done){ parts.push({t:' '+WRAP[lv],kr:'연습 시간이 끝났어요. 수고하셨어요!'}); done=true; }
+  var shown=issues.filter(function(i){return !(i.id==='polite'&&issues.length>1)}).slice(0,2);
+  return {issues:issues,notes:shown,parts:parts,done:done,kind:kind,recastUsed:!!recast};
+}
+
+/* ---------- rendering ---------- */
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function scrollDown(){var m=$('#msgs');m.scrollTop=m.scrollHeight}
+function addBot(parts){
+  var row=el('div','msg bot'), b=el('div','bubble'), kr=[];
+  parts.forEach(function(p){
+    if(p.m) b.appendChild(el('span','recast',p.m));
+    if(p.t) b.appendChild(document.createTextNode(p.t));
+    if(p.kr) kr.push(p.kr);
+  });
+  if(kr.length){var k=el('div','kr',kr.join(' '));k.lang='ko';b.appendChild(k)}
+  row.appendChild(b); $('#msgs').appendChild(row); scrollDown(); return row;
+}
+function addMe(text){
+  var row=el('div','msg me'); row.appendChild(el('div','bubble',text)); $('#msgs').appendChild(row); scrollDown(); return row;
+}
+function addNote(row,issue){
+  var n=el('div','note'+(issue.kind==='note'?' soft':''));
+  n.appendChild(el('b',null,(issue.kind==='note'?'Note: ':'Tip: ')));
+  n.appendChild(document.createTextNode(issue.tip)); row.appendChild(n); scrollDown();
+}
+function updateTracker(){
+  var s=G.slots, lab={drink:'Drink',size:'Size',temp:'Hot / iced',where:'Here / go',name:'Name',pay:'Pay'}, sh={temp:'Temp',where:'Where'};
+  document.querySelectorAll('#tracker li').forEach(function(li){
+    var k=li.dataset.k; li.className=s[k]?'on':'';
+    li.textContent=s[k]?(sh[k]||lab[k])+': '+s[k]:lab[k];
+  });
+  $('#turnBadge').textContent='Turn '+G.turn+' / '+S.max;
+}
+function renderChips(){
+  var box=$('#chips'); box.textContent='';
+  if(G.done) return;
+  CHIPS[nextStage()][LV[S.level]].forEach(function(c){
+    var b=el('button','chip',c); b.type='button'; b.addEventListener('click',function(){send(c)}); box.appendChild(b);
+  });
+  scrollDown();
+}
+function showHint(){
+  if(G.done) return;
+  var h=hintText(), box=$('#hint'); box.textContent='';
+  box.appendChild(el('strong',null,'Hint'));
+  box.appendChild(document.createTextNode(h.en+' '));
+  var k=el('span','kr','('+h.kr+')'); k.lang='ko'; box.appendChild(k);
+  box.hidden=false; scrollDown();
+}
+function hideHint(){$('#hint').hidden=true}
+function armTimer(){
+  clearTimeout(hintTimer);
+  if(S.hint>0&&!G.done&&!busy) hintTimer=setTimeout(showHint,S.hint*1000);
+}
+function logRow(turn,text,issues){
+  var tb=$('#logRows'); if(G.rows.length===1) tb.textContent='';
+  var tr=el('tr'), real=issues.filter(function(i){return i.kind==='error'}).length>0;
+  var flag=issues.length?issues.map(function(i){return i.label}).join('; '):'—';
+  var fb=issues.length?({recast:'Recast',explicit:'Explicit',off:'Off'})[S.fb]:'—';
+  var time=new Date().toLocaleTimeString([], {hour12:false});
+  tr.appendChild(el('td','n',String(turn)));
+  tr.appendChild(el('td',null,text));
+  tr.appendChild(el('td','flag'+(real?' bad':''),flag));
+  tr.appendChild(el('td',null,fb));
+  tr.appendChild(el('td','t',time));
+  tb.appendChild(tr);
+  $('#logCount').textContent=G.rows.length+(G.rows.length===1?' turn':' turns');
+  var body=$('#logBody'); body.scrollTop=body.scrollHeight;
+  return {flag:flag,fb:fb,time:time};
+}
+function send(text){
+  text=(text||'').trim(); if(!text||busy||G.done) return;
+  busy=true; clearTimeout(hintTimer); hideHint();
+  var res=plan(text), row=addMe(text);
+  if(S.fb==='explicit') res.notes.forEach(function(n){addNote(row,n)});
+  G.rows.push({turn:G.turn,learner:text,issues:res.issues.map(function(i){return i.label}),feedback:res.issues.length?S.fb:'none',recastApplied:res.recastUsed,time:null,mia:null});
+  var info=logRow(G.turn,text,res.issues), rec=G.rows[G.rows.length-1];
+  rec.time=info.time; rec.mia=res.parts.map(function(p){return (p.m||'')+(p.t||'')}).join('').trim();
+  updateTracker(); $('#chips').textContent=''; $('#inp').value='';
+  var typing=el('div','msg bot'), tb=el('div','bubble typing'); tb.setAttribute('aria-hidden','true'); tb.innerHTML='<i></i><i></i><i></i>';
+  typing.appendChild(tb); $('#msgs').appendChild(typing); scrollDown();
+  setTimeout(function(){
+    typing.remove(); addBot(res.parts); busy=false;
+    if(res.done) finish(); else {renderChips(); armTimer(); if(res.kind==='fallback'||res.kind==='repeat') showHint();}
+  },520);
+}
+function finish(){
+  G.done=true; $('#chips').textContent=''; hideHint(); clearTimeout(hintTimer);
+  $('#inp').disabled=true; $('#sendBtn').disabled=true; $('#inp').placeholder='Session complete. Press Restart to practise again.';
+  var s=el('div','sys','Session complete · '+G.turn+(G.turn===1?' turn':' turns')+' logged.');
+  var b=el('button','btn primary','Practise again'); b.type='button'; b.addEventListener('click',restart); s.appendChild(b);
+  $('#msgs').appendChild(s); scrollDown(); b.focus();
+}
+function restart(){
+  clearTimeout(hintTimer); busy=false;
+  G={turn:0,slots:{},rows:[],done:false};
+  $('#msgs').textContent=''; hideHint();
+  var br=el('div','brief'); br.innerHTML='<b>Your task:</b> order a drink and pay. Type your own reply or tap a suggestion.'; $('#msgs').appendChild(br);
+  $('#logRows').innerHTML='<tr><td class="empty" colspan="5">No turns yet. Send a reply and it is logged here.</td></tr>';
+  $('#logCount').textContent='0 turns';
+  $('#inp').disabled=false; $('#sendBtn').disabled=false; $('#inp').placeholder='Type your reply to Mia…'; $('#inp').value='';
+  addBot([{t:OPEN[LV[S.level]],kr:'안녕하세요! 블루도어 카페에 오신 것을 환영합니다. '+KRQ.drink}]);
+  updateTracker(); renderChips(); armTimer();
+}
+function exportLog(){
+  var data={app:'Café Role-play Coach',note:'Scripted demo, no AI model',exported:new Date().toISOString(),settings:{level:S.level,feedback:S.fb,hintAfterSeconds:S.hint,koreanSupport:S.kr,maxTurns:S.max},order:G.slots,turns:G.rows};
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cafe-roleplay-log.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(a.href)},1500);
+}
+
+/* ---------- wiring ---------- */
+$('#form').addEventListener('submit',function(e){e.preventDefault();send($('#inp').value)});
+$('#inp').addEventListener('input',function(){hideHint();armTimer()});
+$('#restartBtn').addEventListener('click',restart);
+$('#exportBtn').addEventListener('click',exportLog);
+$('#logToggle').addEventListener('click',function(){
+  var open=this.getAttribute('aria-expanded')!=='true';
+  this.setAttribute('aria-expanded',open); $('#logBody').hidden=!open;
+  if(open){var l=$('.left'); l.scrollTop=l.scrollHeight;}
+  scrollDown();
+});
+document.querySelectorAll('input[name=level]').forEach(function(r){r.addEventListener('change',function(){
+  S.level=r.value; renderChips(); if(!$('#hint').hidden) showHint();
+})});
+document.querySelectorAll('input[name=fb]').forEach(function(r){r.addEventListener('change',function(){S.fb=r.value})});
+document.querySelectorAll('input[name=hint]').forEach(function(r){r.addEventListener('change',function(){
+  S.hint=+r.value; hideHint(); armTimer();
+})});
+$('#kr').addEventListener('change',function(){S.kr=this.checked;$('#chat').classList.toggle('kr-on',S.kr)});
+$('#max').addEventListener('change',function(){S.max=+this.value;updateTracker()});
+restart();
+})();
+</script>
+
+<script>
+/* Deck integration: when shown inside the slide deck's iframe, hand Esc / PageUp / PageDown back to the deck. */
+(function(){ if (window.parent === window) return;
+  addEventListener('keydown', function(e){
+    if (e.key==='Escape' || e.key==='PageDown' || e.key==='PageUp') parent.postMessage({deck:'key', key:e.key}, '*');
+  });
+})();
+</script>
+</body>
+</html>

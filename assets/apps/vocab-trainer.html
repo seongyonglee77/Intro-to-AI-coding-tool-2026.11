@@ -1,0 +1,550 @@
+<!-- Sample app produced for the workshop 'Beyond Chatbots' — scripted demo, no AI model inside. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Word Garden</title>
+<style>
+:root{
+  --dark:#361A54; --bright:#993BFF; --mid:#BA82FF; --tint:#EEDEFF; --paper:#FAFAFA; --ink:#2A2233; --maroon:#651D32; --ok:#2E7D5B;
+  --line:#E0D1F2; --muted:#5F5472;
+  --font:"Segoe UI","Helvetica Neue",Arial,"Noto Sans KR","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{font:16px/1.45 var(--font);color:var(--ink);background:var(--paper);display:flex;flex-direction:column;overflow:hidden}
+:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ic{width:1em;height:1em;flex:none}
+kbd{font:600 15px/1 var(--font);border:1px solid currentColor;border-radius:3px;padding:2px 6px;opacity:.85}
+
+/* top bar */
+.top{flex:none;height:44px;background:var(--dark);color:#fff;display:flex;align-items:center;gap:12px;padding:0 16px}
+.top h1{margin:0;font-size:18px;font-weight:600;letter-spacing:.01em;white-space:nowrap}
+.tag{background:var(--mid);color:var(--dark);font-size:15px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:1px 9px;border-radius:3px;white-space:nowrap}
+.top .note{margin-left:auto;font-size:15px;color:var(--tint);white-space:nowrap}
+
+/* layout */
+main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:14px;padding:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:6px}
+.study{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0}
+.side{display:flex;flex-direction:column;gap:12px;min-height:0;overflow-y:auto}
+h2{margin:0;font-size:18px;font-weight:600;color:var(--dark);display:flex;align-items:center;gap:8px}
+h2::before{content:"";width:4px;height:20px;background:var(--bright);border-radius:2px}
+
+/* tabs */
+.tabs{flex:none;display:flex;gap:6px}
+.tab{font-size:17px;font-weight:600;padding:8px 18px;border-radius:6px;border:1px solid var(--line);background:#fff;color:var(--dark)}
+.tab:hover{background:var(--tint)}
+.tab[aria-selected="true"]{background:var(--dark);border-color:var(--dark);color:#fff}
+.stage{flex:1 1 0px;min-height:0;display:flex;flex-direction:column;padding:18px 20px}
+.stage:focus{outline:none}
+.panel{flex:1 1 0px;min-height:0;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.qwrap{margin:auto 0;display:flex;flex-direction:column;gap:12px}
+.keys{flex:none;margin:0;display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 16px;font-size:15px;color:var(--muted)}
+.keys kbd{color:var(--dark);margin:0 3px 0 8px}
+
+/* flashcard */
+.deck{flex:1 1 0px;min-height:0;display:flex;perspective:1400px}
+.fcard{flex:1;position:relative;border:0;padding:0;background:none;text-align:center;transform-style:preserve-3d;transition:transform .45s ease;color:inherit}
+.fcard.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:6px;padding:20px 26px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:auto}
+.front{background:#fff;border:1px solid var(--line);border-top:6px solid var(--bright)}
+.back{background:var(--dark);color:#fff;transform:rotateY(180deg);border:1px solid var(--dark)}
+.badge{position:absolute;top:14px;left:16px;display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;color:var(--dark);background:var(--tint);padding:2px 10px 2px 6px;border-radius:3px}
+.badge .ic{width:22px;height:22px}
+.back .badge{background:transparent;color:var(--mid)}
+.word{font-size:56px;font-weight:700;color:var(--dark);line-height:1.1;letter-spacing:.01em;overflow-wrap:anywhere}
+.back .word{font-size:26px;color:var(--mid)}
+.tip{font-size:17px;color:var(--muted)}
+.def{font-size:23px;line-height:1.35;font-weight:600}
+.ex{font-size:18px;line-height:1.4;color:var(--tint);font-style:italic}
+.ex strong{color:#fff;font-style:normal;text-decoration:underline;text-decoration-color:var(--mid);text-underline-offset:3px}
+.ko{font-size:22px;color:var(--mid);font-weight:600}
+.grade{flex:none;display:flex;gap:10px}
+.gbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:600;padding:10px 14px;border-radius:6px;border:1px solid var(--dark);background:#fff;color:var(--dark)}
+.gbtn:hover:not(:disabled){background:var(--tint)}
+.gbtn.yes{background:var(--bright);border-color:var(--bright);color:#fff}
+.gbtn.yes:hover:not(:disabled){background:var(--dark);border-color:var(--dark)}
+.gbtn.no{border-color:var(--maroon);color:var(--maroon)}
+.gbtn.no:hover:not(:disabled){background:#f6e9ed}
+.gbtn:disabled{opacity:.4;cursor:default}
+
+/* quiz + spell */
+.qlabel{margin:0;font-size:17px;font-weight:600;color:var(--muted)}
+.qdef{margin:0;font-size:24px;line-height:1.35;font-weight:600;color:var(--dark)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;font-size:21px;font-weight:600;padding:12px 14px;border-radius:6px;border:1px solid var(--bright);background:#fff;color:var(--dark)}
+.opt:hover:not(:disabled){background:var(--tint)}
+.opt kbd{flex:none;min-width:26px;text-align:center}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+.opt.bad{background:var(--maroon);border-color:var(--maroon);color:#fff;opacity:1}
+.opt.dim{opacity:.45}
+.fbrow{display:flex;gap:14px;align-items:flex-start}
+.fbrow .btn{flex:none;margin-top:2px}
+.fb{flex:1;min-width:0;min-height:88px;font-size:17px;line-height:1.4}
+.fb .res{display:flex;align-items:center;gap:8px;font-weight:700;font-size:19px;margin-bottom:2px}
+.fb .res.ok{color:var(--ok)}
+.fb .res.bad{color:var(--maroon)}
+.fb .res .ic{width:22px;height:22px}
+.fb .exs{color:var(--ink)}
+.fb .kos{color:var(--muted)}
+.sex{margin:0;font-size:19px;line-height:1.4;color:var(--ink);font-style:italic}
+.sex .blank{font-style:normal;font-weight:700;color:var(--bright);letter-spacing:.08em}
+.sko{margin:0;font-size:18px;color:var(--muted)}
+.pat{margin:0;font-size:22px;font-weight:700;letter-spacing:.14em;color:var(--dark)}
+.pat small{font-size:15px;font-weight:400;letter-spacing:0;color:var(--muted);margin-left:10px}
+.sform{display:flex;gap:10px}
+.sform input{flex:1;min-width:0;font:inherit;font-size:22px;padding:8px 12px;border:1px solid #bba8d3;border-radius:6px;background:#fff;color:var(--ink)}
+.sform input.ok{border-color:var(--ok);background:#E9F4EE}
+.sform input.bad{border-color:var(--maroon);background:#F6E9ED}
+.btn{font-size:17px;font-weight:600;padding:9px 18px;border-radius:6px;border:1px solid var(--dark);background:#fff;color:var(--dark);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover:not(:disabled){background:var(--tint)}
+.btn.primary{background:var(--bright);border-color:var(--bright);color:#fff}
+.btn.primary:hover:not(:disabled){background:var(--dark);border-color:var(--dark)}
+.btn.danger{border-color:var(--maroon);color:var(--maroon)}
+.btn.danger:hover:not(:disabled){background:#f6e9ed}
+.btn:disabled{opacity:.4;cursor:default}
+
+/* garden */
+.garden{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.gtop{display:flex;align-items:center;gap:14px}
+.ring{position:relative;flex:none;width:80px;height:80px}
+.ring svg{width:80px;height:80px;transform:rotate(-90deg)}
+.ring .trk{fill:none;stroke:var(--tint);stroke-width:11}
+.ring .arc{fill:none;stroke:var(--bright);stroke-width:11;stroke-linecap:butt;transition:stroke-dashoffset .5s}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:22px;color:var(--dark)}
+.gstats{display:flex;flex-direction:column;gap:6px;min-width:0}
+.gstats .big{font-size:17px;font-weight:600;color:var(--dark);line-height:1.25}
+.streak{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:var(--tint);color:var(--dark);padding:2px 10px 2px 6px;border-radius:4px;font-size:16px}
+.streak .ic{width:22px;height:22px}
+.streak b{font-size:20px;color:var(--bright)}
+.beds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bed{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px 6px 6px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.bed.b3{background:var(--tint);border-color:var(--mid)}
+.bhead{display:flex;align-items:center;gap:6px;padding:0 2px}
+.bhead .ic{width:30px;height:30px}
+.bhead div{line-height:1.15;min-width:0}
+.bhead strong{display:block;font-size:17px;color:var(--dark)}
+.bhead span{font-size:15px;color:var(--muted)}
+.blist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:118px;overflow-y:auto}
+.blist li{flex:none;font-size:15px;line-height:1.3;padding:2px 6px;background:#fff;border:1px solid var(--line);border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blist li.moved{border-color:var(--bright);background:var(--tint);font-weight:700;animation:pop .7s ease-out}
+@keyframes pop{0%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+/* teacher */
+.teacher{padding:12px 16px 12px;display:flex;flex-direction:column;gap:8px}
+.teacher label.lab{font-size:17px;font-weight:600;color:var(--dark)}
+.fmt{display:block;font-size:15px;font-weight:400;color:var(--muted)}
+textarea{width:100%;font:inherit;font-size:15px;line-height:1.4;padding:7px 10px;border:1px solid #bba8d3;border-radius:6px;resize:none;height:76px;color:var(--ink);background:#fff}
+.tbtns{display:flex;gap:8px}
+.tbtns .btn{flex:1;padding:7px 10px;font-size:16px}
+.status{margin:0;font-size:15px;line-height:1.35;color:var(--muted);min-height:20px}
+.status.err{color:var(--maroon);font-weight:600}
+.status.good{color:var(--dark);font-weight:600}
+.srow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.link{background:none;border:0;padding:0;font-size:15px;color:var(--bright);text-decoration:underline;white-space:nowrap}
+
+@media (max-width:900px){main{grid-template-columns:minmax(0,1fr) 320px;gap:10px;padding:10px}.top .note{display:none}.word{font-size:44px}.opt{font-size:19px}.bhead .ic{width:22px;height:22px}.bhead span{display:none}.bed{padding:8px 5px 6px}}
+@media (max-height:560px){
+  .stage{padding:12px 14px}.word{font-size:40px}.back .word{font-size:22px}.def{font-size:19px}.ex{font-size:16px}.ko{font-size:18px}
+  .face{padding:14px 18px;gap:6px}.qdef{font-size:20px}.opt{font-size:18px;padding:8px 12px}.fb{min-height:0}.qlabel{display:none}.qwrap{gap:8px}.fb .res{margin-bottom:0}.fb{font-size:16px}
+  .fb .res{font-size:17px}.garden{padding:10px 12px}.blist{max-height:84px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-seed" viewBox="0 0 32 32"><ellipse cx="16" cy="20" rx="3.4" ry="4.6" fill="#361A54" transform="rotate(18 16 20)"/><path d="M3 28Q16 16 29 28Z" fill="#BA82FF"/></symbol>
+  <symbol id="i-sprout" viewBox="0 0 32 32"><path d="M16 26V13" stroke="#361A54" stroke-width="2.4" fill="none"/><path d="M16 18C16 12 10 10 6 11c0 5 4 8 10 7z" fill="#BA82FF"/><path d="M16 14c0-5 5-8 10-7 0 6-4 8-10 7z" fill="#993BFF"/><path d="M3 29Q16 20 29 29Z" fill="#BA82FF"/></symbol>
+  <symbol id="i-flower" viewBox="0 0 32 32"><path d="M16 27V11" stroke="#361A54" stroke-width="2.4" fill="none"/><path d="M16 23c-5 0-8-3-8-6 5 0 8 2 8 6z" fill="#BA82FF"/><g fill="#993BFF"><circle cx="16" cy="5.2" r="3.7"/><circle cx="20.6" cy="8.5" r="3.7"/><circle cx="18.8" cy="14" r="3.7"/><circle cx="13.2" cy="14" r="3.7"/><circle cx="11.4" cy="8.5" r="3.7"/></g><circle cx="16" cy="10.4" r="3" fill="#EEDEFF"/><path d="M4 30Q16 22 28 30Z" fill="#BA82FF"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2c.8 4.2 5.5 6.2 5.5 11.2a5.5 5.5 0 0 1-11 0c0-2.2 1-3.6 2.3-4.6.1 1.9 1 3 2.2 3.3C10.6 8.6 10.2 5.4 12 2z" fill="#993BFF"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></symbol>
+</svg>
+
+<header class="top">
+  <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27V11" stroke="#fff" stroke-width="2.4" fill="none"/><path d="M16 23c-5 0-8-3-8-6 5 0 8 2 8 6z" fill="#BA82FF"/><g fill="#BA82FF"><circle cx="16" cy="5.2" r="3.7"/><circle cx="20.6" cy="8.5" r="3.7"/><circle cx="18.8" cy="14" r="3.7"/><circle cx="13.2" cy="14" r="3.7"/><circle cx="11.4" cy="8.5" r="3.7"/></g><circle cx="16" cy="10.4" r="3" fill="#361A54"/></svg>
+  <h1>Word Garden</h1><span class="tag">Sample app</span>
+  <span class="note">Leitner boxes · progress saved in this browser</span>
+</header>
+
+<main>
+  <section class="study" aria-label="Study area">
+    <div class="tabs" role="tablist" aria-label="Study mode">
+      <button class="tab" role="tab" id="t-flash" data-mode="flash" aria-selected="true" aria-controls="p-flash">Flashcards</button>
+      <button class="tab" role="tab" id="t-quiz" data-mode="quiz" aria-selected="false" aria-controls="p-quiz" tabindex="-1">Quiz</button>
+      <button class="tab" role="tab" id="t-spell" data-mode="spell" aria-selected="false" aria-controls="p-spell" tabindex="-1">Spell it</button>
+    </div>
+
+    <div class="card stage" id="stage" tabindex="-1">
+      <!-- Flashcards -->
+      <div class="panel" id="p-flash" role="tabpanel" aria-labelledby="t-flash">
+        <div class="deck">
+          <button class="fcard" id="card" type="button" aria-pressed="false">
+            <span class="face front" id="face-f">
+              <span class="badge" id="f-badge"><svg class="ic"><use href="#i-sprout"/></svg><span>Box 2 · Sprout</span></span>
+              <span class="word" id="f-word"></span>
+              <span class="tip">Click the card or press Space to flip</span>
+            </span>
+            <span class="face back" id="face-b" aria-hidden="true">
+              <span class="badge" id="b-badge"><svg class="ic"><use href="#i-sprout"/></svg><span></span></span>
+              <span class="word" id="b-word"></span>
+              <span class="def" id="f-def"></span>
+              <span class="ex" id="f-ex"></span>
+              <span class="ko" id="f-ko" lang="ko"></span>
+            </span>
+          </button>
+        </div>
+        <div class="grade">
+          <button class="gbtn no" id="g-no" type="button" disabled>Not yet <kbd>1</kbd></button>
+          <button class="gbtn yes" id="g-yes" type="button" disabled>Got it <kbd>2</kbd></button>
+        </div>
+      </div>
+
+      <!-- Quiz -->
+      <div class="panel" id="p-quiz" role="tabpanel" aria-labelledby="t-quiz" hidden>
+       <div class="qwrap">
+        <p class="qlabel">Which word matches this definition?</p>
+        <p class="qdef" id="q-def"></p>
+        <div class="opts" id="q-opts" role="group" aria-label="Choose the matching word"></div>
+        <div class="fbrow">
+          <div class="fb" id="q-fb" role="status" aria-live="polite"></div>
+          <button class="btn primary" id="q-next" type="button" disabled>Next word <kbd>Enter</kbd></button>
+        </div>
+       </div>
+      </div>
+
+      <!-- Spell it -->
+      <div class="panel" id="p-spell" role="tabpanel" aria-labelledby="t-spell" hidden>
+       <div class="qwrap">
+        <p class="qlabel">Type the word that matches this definition</p>
+        <p class="qdef" id="s-def"></p>
+        <p class="sex" id="s-ex"></p>
+        <p class="sko" id="s-ko" lang="ko"></p>
+        <p class="pat" id="s-pat" aria-live="off"></p>
+        <form class="sform" id="s-form" autocomplete="off">
+          <label class="sr" for="s-in">Your spelling</label>
+          <input id="s-in" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="Type the word, then press Enter">
+          <button class="btn primary" id="s-check" type="submit">Check <kbd>Enter</kbd></button>
+        </form>
+        <div class="fbrow">
+          <div class="fb" id="s-fb" role="status" aria-live="polite"></div>
+          <button class="btn primary" id="s-next" type="button" disabled>Next word <kbd>Enter</kbd></button>
+        </div>
+       </div>
+      </div>
+    </div>
+
+    <p class="keys"><span>Right answer: up one box. Wrong answer: back to Box 1.</span><span id="kb"></span></p>
+  </section>
+
+  <aside class="side" aria-label="Progress and teacher tools">
+    <section class="card garden" aria-label="Your garden">
+      <h2>Your garden</h2>
+      <div class="gtop">
+        <div class="ring" role="img" aria-label="Progress ring" id="ringBox">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="trk" cx="50" cy="50" r="42"/><circle class="arc" id="arc" cx="50" cy="50" r="42" stroke-dasharray="263.9" stroke-dashoffset="263.9"/></svg>
+          <b id="pct">0%</b>
+        </div>
+        <div class="gstats">
+          <div class="big" id="mastered"></div>
+          <div class="streak"><svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg><span>Streak</span><b id="streak">0</b><span id="best"></span></div>
+        </div>
+      </div>
+      <div class="beds">
+        <div class="bed"><div class="bhead"><svg class="ic" aria-hidden="true"><use href="#i-seed"/></svg><div><strong>Box 1</strong><span id="n1"></span></div></div><ul class="blist" id="l1" aria-label="Box 1 seeds"></ul></div>
+        <div class="bed"><div class="bhead"><svg class="ic" aria-hidden="true"><use href="#i-sprout"/></svg><div><strong>Box 2</strong><span id="n2"></span></div></div><ul class="blist" id="l2" aria-label="Box 2 sprouts"></ul></div>
+        <div class="bed b3"><div class="bhead"><svg class="ic" aria-hidden="true"><use href="#i-flower"/></svg><div><strong>Box 3</strong><span id="n3"></span></div></div><ul class="blist" id="l3" aria-label="Box 3 flowers"></ul></div>
+      </div>
+    </section>
+
+    <section class="card teacher" aria-label="Teacher panel">
+      <h2>Teacher panel</h2>
+      <label class="lab" for="paste">Paste your own list <span class="fmt">word | definition | example | Korean (optional)</span></label>
+      <textarea id="paste" spellcheck="false" placeholder="rubric | A table that shows scoring criteria | The rubric has four criteria.&#10;scaffold | Temporary support for a learner | She gave a sentence frame as a scaffold."></textarea>
+      <div class="tbtns">
+        <button class="btn primary" id="load" type="button">Load list</button>
+        <button class="btn danger" id="reset" type="button">Reset progress</button>
+      </div>
+      <div class="srow"><p class="status" id="msg" role="status"></p><button class="link" id="demo" type="button">Restore demo</button></div>
+    </section>
+  </aside>
+</main>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+
+/* ---------- data ---------- */
+var DEFAULT=[
+ {w:'scaffold',d:'Temporary support that helps a learner do a task they cannot yet do alone.',e:'The teacher gave a sentence frame as a scaffold for the new writing task.',k:'비계, 학습 지원(스캐폴딩)'},
+ {w:'assessment',d:'A way of checking what learners know or can do.',e:'The final assessment includes a speaking task and a short quiz.',k:'평가'},
+ {w:'feedback',d:'Information about how well someone is doing, so they can improve.',e:'She gave students feedback on their drafts within two days.',k:'피드백'},
+ {w:'curriculum',d:'The set of subjects and topics taught in a school or course.',e:'The new curriculum puts more focus on speaking skills.',k:'교육과정'},
+ {w:'inquiry',d:'Learning by asking questions and investigating to find answers.',e:'An inquiry lesson starts with a question the students want to answer.',k:'탐구'},
+ {w:'autonomy',d:'The ability to make your own choices and manage your own learning.',e:'Choosing their own books gives learners more autonomy.',k:'자율성'},
+ {w:'comprehension',d:'Understanding what you read or hear.',e:'After reading, we did a short comprehension check.',k:'이해(력)'},
+ {w:'collaborate',d:'To work together with others to reach a shared goal.',e:'Students collaborate in pairs to plan a short presentation.',k:'협력하다'},
+ {w:'evaluate',d:'To judge how good, useful or effective something is.',e:'Please evaluate the two articles and choose the stronger one.',k:'평가하다'},
+ {w:'objective',d:'What a lesson is meant to achieve; a clear learning goal.',e:'Today’s objective is to order food politely in English.',k:'목표, 학습 목표'},
+ {w:'rubric',d:'A table that shows the criteria and levels used to score work.',e:'The speaking rubric has four criteria: fluency, accuracy, range and interaction.',k:'평가 기준표'},
+ {w:'differentiate',d:'To adapt teaching so that different learners get the help they need.',e:'She differentiates her tasks by offering three levels of reading text.',k:'수준별로 지도하다'}
+];
+var SEED={assessment:3,feedback:3,collaborate:3,objective:3,scaffold:2,curriculum:2,comprehension:2,evaluate:2,inquiry:1,autonomy:1,rubric:1,differentiate:1};
+var BOXN={1:'Seed',2:'Sprout',3:'Flower'}, BOXI={1:'#i-seed',2:'#i-sprout',3:'#i-flower'};
+var KEY='wordgarden.v1';
+var S={list:[],box:{},streak:0,best:0,mode:'flash',cur:0,moved:null,flipped:false,Q:null,P:null};
+
+/* ---------- persistence ---------- */
+function save(){try{localStorage.setItem(KEY,JSON.stringify({list:S.list,box:S.box,streak:S.streak,best:S.best}))}catch(e){}}
+function load(){
+  try{
+    var d=JSON.parse(localStorage.getItem(KEY)||'null');
+    if(d&&Array.isArray(d.list)&&d.list.length>=2&&d.list.every(function(x){return x&&typeof x.w==='string'&&typeof x.d==='string'})){
+      S.list=d.list.map(function(x){return {w:x.w,d:x.d,e:x.e||'',k:x.k||''}});
+      S.box=d.box&&typeof d.box==='object'?d.box:{}; S.streak=+d.streak||0; S.best=+d.best||0; return true;
+    }
+  }catch(e){}
+  return false;
+}
+function demo(){S.list=DEFAULT.map(function(x){return {w:x.w,d:x.d,e:x.e,k:x.k}});S.box=JSON.parse(JSON.stringify(SEED));S.streak=4;S.best=6;S.cur=0;S.moved=null}
+
+/* ---------- leitner ---------- */
+function key(w){return w.toLowerCase()}
+function boxOf(w){var b=S.box[key(w)];return b>=1&&b<=3?b:1}
+function pickNext(){
+  var n=S.list.length; if(n<2) return 0;
+  var wt=S.list.map(function(x,i){return i===S.cur?0:({1:6,2:3,3:1})[boxOf(x.w)]});
+  var sum=wt.reduce(function(a,b){return a+b},0), r=Math.random()*sum;
+  for(var i=0;i<n;i++){r-=wt[i];if(r<0) return i}
+  return (S.cur+1)%n;
+}
+function grade(ok){
+  var w=S.list[S.cur].w, old=boxOf(w), nw=ok?Math.min(3,old+1):1;
+  S.box[key(w)]=nw; S.streak=ok?S.streak+1:0; S.best=Math.max(S.best,S.streak); S.moved=key(w);
+  save(); renderGarden(); return {old:old,nw:nw};
+}
+function moveText(r,ok){
+  if(ok&&r.old===3) return 'Already in Box 3 — it stays a flower.';
+  return ok?'Box '+r.old+' → Box '+r.nw+'.':(r.old===1?'Stays in Box 1.':'Back to Box 1.');
+}
+
+/* ---------- garden ---------- */
+function renderGarden(){
+  var g={1:[],2:[],3:[]}; S.list.forEach(function(x){g[boxOf(x.w)].push(x)});
+  [1,2,3].forEach(function(n){
+    var ul=$('#l'+n); ul.textContent='';
+    g[n].forEach(function(x){var li=el('li',key(x.w)===S.moved?'moved':'',x.w);li.title=x.w;ul.appendChild(li)});
+    $('#n'+n).textContent=g[n].length+' '+BOXN[n].toLowerCase()+'s';
+  });
+  var pct=Math.round(g[3].length/S.list.length*100);
+  $('#pct').textContent=pct+'%';
+  $('#arc').style.strokeDashoffset=(263.9*(1-pct/100)).toFixed(1);
+  $('#ringBox').setAttribute('aria-label',pct+' percent of words mastered');
+  $('#mastered').textContent=g[3].length+' of '+S.list.length+' words mastered';
+  $('#streak').textContent=S.streak;
+  $('#best').textContent=S.best?'· best '+S.best:'';
+  S.moved=null;
+}
+
+/* ---------- helpers for example sentences ---------- */
+function fillEx(node,text,word,mode){
+  node.textContent=''; if(!text){node.hidden=true;return}
+  node.hidden=false;
+  var re=new RegExp('('+esc(word)+'\\w*)','ig'), parts=text.split(re);
+  parts.forEach(function(p,i){
+    if(i%2===1) node.appendChild(mode==='blank'?el('span','blank','_____'):el('strong',null,p));
+    else if(p) node.appendChild(document.createTextNode(p));
+  });
+}
+function setBadge(node,b){node.querySelector('use').setAttribute('href',BOXI[b]);node.querySelector('span').textContent='Box '+b+' · '+BOXN[b]}
+function cur(){return S.list[S.cur]}
+
+/* ---------- flashcards ---------- */
+function setFlipped(f,instant){
+  var c=$('#card');
+  if(instant){c.style.transition='none'}
+  S.flipped=f; c.classList.toggle('flipped',f); c.setAttribute('aria-pressed',f);
+  $('#face-f').setAttribute('aria-hidden',f); $('#face-b').setAttribute('aria-hidden',!f);
+  $('#g-no').disabled=!f; $('#g-yes').disabled=!f;
+  if(instant){void c.offsetWidth;c.style.transition=''}
+}
+function renderFlash(){
+  var w=cur(), b=boxOf(w.w);
+  $('#f-word').textContent=w.w; $('#b-word').textContent=w.w; $('#f-def').textContent=w.d;
+  fillEx($('#f-ex'),w.e,w.w,'strong');
+  var ko=$('#f-ko'); ko.textContent=w.k; ko.hidden=!w.k;
+  setBadge($('#f-badge'),b); setBadge($('#b-badge'),b);
+  setFlipped(false,true);
+}
+function gradeFlash(ok){
+  if(!S.flipped) return;
+  grade(ok); S.cur=pickNext(); renderFlash(); $('#card').focus({preventScroll:true});
+}
+
+/* ---------- quiz ---------- */
+function renderQuiz(){
+  var w=cur(), others=shuffle(S.list.filter(function(x,i){return i!==S.cur})).slice(0,3), opts=shuffle([w].concat(others));
+  S.Q={answered:false,idx:opts.indexOf(w),opts:opts};
+  $('#q-def').textContent=w.d;
+  var box=$('#q-opts'); box.textContent='';
+  opts.forEach(function(o,i){
+    var b=el('button','opt'); b.type='button'; b.dataset.i=i;
+    b.appendChild(el('kbd',null,String(i+1))); b.appendChild(el('span',null,o.w));
+    b.addEventListener('click',function(){answerQuiz(i)}); box.appendChild(b);
+  });
+  $('#q-fb').textContent=''; $('#q-next').disabled=true;
+}
+function feedback(box,ok,msg,w){
+  box.textContent='';
+  var r=el('div','res '+(ok?'ok':'bad'));
+  var ic=document.createElementNS('http://www.w3.org/2000/svg','svg'); ic.setAttribute('class','ic');
+  var u=document.createElementNS('http://www.w3.org/2000/svg','use'); u.setAttribute('href',ok?'#i-check':'#i-x'); ic.appendChild(u);
+  r.appendChild(ic); r.appendChild(el('span',null,msg)); box.appendChild(r);
+  if(w.e){var e=el('div','exs');fillEx(e,w.e,w.w,'strong');e.querySelectorAll('strong').forEach(function(s){s.style.fontWeight='700'});box.appendChild(e)}
+  if(w.k){var k=el('div','kos','한국어: '+w.k);k.lang='ko';box.appendChild(k)}
+}
+function answerQuiz(i){
+  var Q=S.Q; if(!Q||Q.answered) return; Q.answered=true;
+  var ok=i===Q.idx, r=grade(ok), w=cur();
+  document.querySelectorAll('#q-opts .opt').forEach(function(b,j){
+    b.disabled=true; if(j===Q.idx) b.classList.add('ok'); else if(j===i) b.classList.add('bad'); else b.classList.add('dim');
+  });
+  feedback($('#q-fb'),ok,(ok?'Correct! ':'Not quite. The answer is “'+w.w+'”. ')+moveText(r,ok),w);
+  var n=$('#q-next'); n.disabled=false; n.focus({preventScroll:true});
+}
+
+/* ---------- spell it ---------- */
+function pattern(w){
+  var letters=w.replace(/[^A-Za-z]/g,'').length;
+  return {p:w.split('').map(function(c,i){return c===' '?' ':(i===0?c:'_')}).join(' '),n:letters};
+}
+function renderSpell(){
+  var w=cur(), pt=pattern(w.w);
+  S.P={answered:false};
+  $('#s-def').textContent=w.d;
+  fillEx($('#s-ex'),w.e,w.w,'blank');
+  var ko=$('#s-ko'); ko.textContent=w.k?'한국어: '+w.k:''; ko.hidden=!w.k;
+  var p=$('#s-pat'); p.textContent=pt.p; p.appendChild(el('small',null,pt.n+' letters'));
+  var inp=$('#s-in'); inp.value=''; inp.readOnly=false; inp.className='';
+  $('#s-check').disabled=false; $('#s-fb').textContent=''; $('#s-next').disabled=true;
+}
+function norm(s){return s.trim().toLowerCase().replace(/\s+/g,' ')}
+function checkSpell(){
+  var P=S.P; if(!P||P.answered) return;
+  var inp=$('#s-in'), val=inp.value; if(!val.trim()) {inp.focus();return}
+  P.answered=true; var w=cur(), ok=norm(val)===norm(w.w), r=grade(ok);
+  inp.readOnly=true; inp.className=ok?'ok':'bad'; $('#s-check').disabled=true;
+  feedback($('#s-fb'),ok,(ok?'Correct! ':'Not quite. It is “'+w.w+'”. ')+moveText(r,ok),{e:'',k:''});
+  var n=$('#s-next'); n.disabled=false; n.focus({preventScroll:true});
+}
+
+/* ---------- mode switching ---------- */
+var KB={
+  flash:'<kbd>Space</kbd>flip<kbd>1</kbd>Not yet<kbd>2</kbd>Got it',
+  quiz:'<kbd>1–4</kbd>choose<kbd>Enter</kbd>next word',
+  spell:'<kbd>Enter</kbd>check, then next word'
+};
+function nextWord(){S.cur=pickNext();renderMode(true)}
+function renderMode(focus){
+  ['flash','quiz','spell'].forEach(function(m){
+    $('#p-'+m).hidden=S.mode!==m;
+    var t=$('#t-'+m); t.setAttribute('aria-selected',S.mode===m); t.tabIndex=S.mode===m?0:-1;
+  });
+  $('#kb').innerHTML=KB[S.mode];
+  if(S.mode==='flash') renderFlash(); else if(S.mode==='quiz') renderQuiz(); else renderSpell();
+  if(focus){
+    if(S.mode==='flash') $('#card').focus({preventScroll:true});
+    else if(S.mode==='spell') $('#s-in').focus({preventScroll:true});
+    else $('#stage').focus({preventScroll:true});
+  }
+}
+
+/* ---------- teacher panel ---------- */
+function say(msg,cls){var m=$('#msg');m.textContent=msg;m.className='status'+(cls?' '+cls:'')}
+function parseList(txt){
+  var out=[],seen={},skipped=0;
+  txt.split(/\r?\n/).forEach(function(line){
+    line=line.trim(); if(!line) return;
+    var p=line.split('|').map(function(x){return x.trim()});
+    if(p.length<2||!p[0]||!p[1]||seen[key(p[0])]){skipped++;return}
+    seen[key(p[0])]=1; out.push({w:p[0],d:p[1],e:p[2]||'',k:p[3]||''});
+  });
+  return {list:out.slice(0,40),skipped:skipped};
+}
+function loadList(){
+  var r=parseList($('#paste').value);
+  if(r.list.length<2){say('Need at least 2 lines like: word | definition | example',"err");return}
+  S.list=r.list; S.box={}; S.streak=0; S.best=0; S.cur=0; S.moved=null; save();
+  renderGarden(); S.cur=pickNext(); renderMode(false);
+  say('Loaded '+r.list.length+' words'+(r.skipped?' · '+r.skipped+(r.skipped===1?' line':' lines')+' skipped':'')+'.','good');
+}
+var armed=false,armT=null;
+function disarm(){armed=false;clearTimeout(armT);$('#reset').textContent='Reset progress'}
+function resetProgress(){
+  if(!armed){armed=true;$('#reset').textContent='Click again to confirm';armT=setTimeout(disarm,4000);return}
+  disarm(); S.box={}; S.streak=0; S.best=0; save(); renderGarden(); renderMode(false);
+  say('Progress reset: every word is back in Box 1.','good');
+}
+
+/* ---------- wiring ---------- */
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){S.mode=t.dataset.mode;renderMode(true)});
+  t.addEventListener('keydown',function(e){
+    var order=['flash','quiz','spell'], i=order.indexOf(S.mode);
+    if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+      e.preventDefault(); S.mode=order[(i+(e.key==='ArrowRight'?1:2))%3]; renderMode(false); $('#t-'+S.mode).focus();
+    }
+  });
+});
+$('#card').addEventListener('click',function(){setFlipped(!S.flipped)});
+$('#g-no').addEventListener('click',function(){gradeFlash(false)});
+$('#g-yes').addEventListener('click',function(){gradeFlash(true)});
+$('#q-next').addEventListener('click',nextWord);
+$('#s-next').addEventListener('click',nextWord);
+$('#s-form').addEventListener('submit',function(e){e.preventDefault();checkSpell()});
+$('#load').addEventListener('click',loadList);
+$('#reset').addEventListener('click',resetProgress);
+$('#demo').addEventListener('click',function(){demo();save();renderGarden();renderMode(false);say('Demo garden restored.','good')});
+document.addEventListener('keydown',function(e){
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  var tag=e.target.tagName; if(tag==='TEXTAREA'||tag==='INPUT'||tag==='SELECT') return;
+  var k=e.key;
+  if(S.mode==='flash'){
+    if(k===' '&&tag!=='BUTTON'){e.preventDefault();setFlipped(!S.flipped)}
+    else if(k==='1'||k==='ArrowLeft'){if(S.flipped){e.preventDefault();gradeFlash(false)}}
+    else if(k==='2'||k==='ArrowRight'){if(S.flipped){e.preventDefault();gradeFlash(true)}}
+  }else if(S.mode==='quiz'){
+    if(/^[1-4]$/.test(k)&&S.Q&&+k<=S.Q.opts.length){e.preventDefault();answerQuiz(+k-1)}
+    else if(k==='Enter'&&tag!=='BUTTON'&&S.Q&&S.Q.answered){e.preventDefault();nextWord()}
+  }else if(S.mode==='spell'){
+    if(k==='Enter'&&tag!=='BUTTON'&&S.P&&S.P.answered){e.preventDefault();nextWord()}
+  }
+});
+
+if(load()) S.cur=pickNext(); else demo();
+renderGarden(); renderMode(false);
+say(S.list.length+' words · saved in this browser.');
+})();
+</script>
+
+<script>
+/* Deck integration: when shown inside the slide deck's iframe, hand Esc / PageUp / PageDown back to the deck. */
+(function(){ if (window.parent === window) return;
+  addEventListener('keydown', function(e){
+    if (e.key==='Escape' || e.key==='PageDown' || e.key==='PageUp') parent.postMessage({deck:'key', key:e.key}, '*');
+  });
+})();
+</script>
+</body>
+</html>
