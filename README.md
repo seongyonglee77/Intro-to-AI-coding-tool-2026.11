@@ -9,6 +9,8 @@ check before trusting what an AI has built (accuracy, security, research ethics,
 
 ## Open the slides
 
+**Online:** https://seongyonglee77.github.io/Intro-to-AI-coding-tool-2026.11/
+
 | File | What it is |
 |---|---|
 | `Beyond-Chatbots_workshop.html` | The deck. Open in Chrome or Edge; keep `engine/` and `assets/` next to it. |
